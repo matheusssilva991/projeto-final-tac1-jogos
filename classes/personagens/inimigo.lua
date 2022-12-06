@@ -10,16 +10,18 @@ function Inimigo:new(nome_inimigo, tipos_inimigos)
 
     local g_inimigos = anim.newGrid(self.largura, self.altura, self.largura_animacao, self.altura_animacao)
     self.anim_inimigos = anim.newAnimation(g_inimigos('1-4', tipos_inimigos.op), 0.15)
+    self.anim_inimigos_parado = anim.newAnimation(g_inimigos('1-1', tipos_inimigos.op), 0.15)
 
     --Status inimigo
     self.posicao = tipos_inimigos.pos
     self.velocidade = tipos_inimigos.vel
     self.dano = tipos_inimigos.dano
-    self.vida = tipos_inimigos.vida
-    self.temp_vida = tipos_inimigos.vida
     self.vel_max = tipos_inimigos.vel_max
     self.raio_deteccao = tipos_inimigos.raio
-    self.raio_colisao = 45
+    self.vida = tipos_inimigos.vida
+    self.temp_vida = tipos_inimigos.vida
+    self.barra_vida = 56
+    self.raio = 40
 
     self.vel_desejada = Vector(0, 0)
     self.aceleracao = Vector(1, 1)
@@ -27,34 +29,33 @@ function Inimigo:new(nome_inimigo, tipos_inimigos)
     self.direcao_des = Vector(0,0)
     self.massa = 5
 
-    self.barra_vida = 56
-
     self.heroi_visivel = false
-    self.estado = "olhando_esq"
+    self.estado = "parado"
 end
 
 function Inimigo:update(dt)
     self.anim_inimigos:update(dt)
+    self.anim_inimigos_parado:update(dt)
 
-    objetivo = heroi.posicao
-    objetivo = objetivo + Vector(heroi.largura/2, heroi.altura/2)
+    self.objetivo = heroi.posicao
+    self.objetivo = self.objetivo + Vector(heroi.largura/2, heroi.altura/2)
 
     -- Definir qual lado o inimigo está olhando
-    if objetivo.x >= self.posicao.x then
+    if self.heroi_visivel and self.objetivo.x >= self.posicao.x then
         self.estado = "olhando_dir"
-    else
+    elseif self.heroi_visivel and self.objetivo.x < self.posicao.x then
         self.estado = "olhando_esq"
     end
 
     -- Verificar se o personagem(heroi) entrou na visão do inimigo
-    if self:checa_visao(objetivo) or heroi.estado_atirando then
+    if self:checa_visao(self.objetivo) or heroi.atirando then
         self.heroi_visivel = true
     end
 
     -- Coloca o zumbi para seguir se tem heroi visivel
     if self.heroi_visivel then
-        self.vel_desejada = objetivo - self.posicao
-        self.direcao_des = objetivo - (self.posicao + self.velocidade)
+        self.vel_desejada = self.objetivo - self.posicao
+        self.direcao_des = self.objetivo - (self.posicao + self.velocidade)
         self.direcao_des = self.direcao_des:limit(self.direcao_max / self.massa)
 
         self.velocidade = self.velocidade + self.direcao_des
@@ -66,25 +67,27 @@ end
 
 function Inimigo:draw()
     love.graphics.setColor(1, 0, 0)
-    love.graphics.circle("line", objetivo.x, objetivo.y, 5)
+    love.graphics.circle("line", self.objetivo.x, self.objetivo.y, 5)
     love.graphics.setColor(0, 1, 0)
     love.graphics.circle("fill", self.posicao.x, self.posicao.y, 5)
     love.graphics.setColor(1, 1, 1)
 
-    if self.estado == "olhando_esq" then
+    if self.estado == 'parado' then
+        self.anim_inimigos_parado:draw(self.img, self.posicao.x - self.largura/2, self.posicao.y - self.altura/2, 0, 1, 1)
+    elseif self.estado == "olhando_esq" then
         self.anim_inimigos:draw(self.img, self.posicao.x + self.largura/2, self.posicao.y - self.altura/2, 0, -1, 1)
     else
         self.anim_inimigos:draw(self.img, self.posicao.x - self.largura/2, self.posicao.y - self.altura/2, 0, 1, 1)
     end
     
     love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("fill", self.posicao.x - 80 + self.largura/2, self.posicao.y + 12 - self.altura/2, 60, 10)
+    love.graphics.rectangle("fill", self.posicao.x - 80 + self.largura/2, self.posicao.y - self.altura/2, 60, 10)
     love.graphics.setColor(1, 0, 0)
-    love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y + 10 - self.altura/2, self.barra_vida, 6)
+    love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y - self.altura/2, self.barra_vida, 6)
     love.graphics.setColor(1, 1, 1)
     --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
-    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_colisao)
-    --love.graphics.print("vida: " ..self.vida, 10, 10)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
+
 end
 
 function Inimigo:checa_visao(objeto)

@@ -4,13 +4,14 @@ function Tiro:new(x, y, direcao)
     self.posicao = Vector(x + 20, y - 18) -- menos 18 para alinhar tiro com sprite
     self.raio = 2
     self.direcao = direcao
+    self.dano = 35
 end
 
 function Tiro:update(dt)
     if self.direcao == 'esquerda' then
-        self.posicao = self.posicao - Vector(260, 0) * dt
+        self.posicao = self.posicao - Vector(800, 0) * dt
     elseif self.direcao == 'direita' then
-        self.posicao = self.posicao + Vector(260, 0) * dt
+        self.posicao = self.posicao + Vector(800, 0) * dt
     end
     
 end
