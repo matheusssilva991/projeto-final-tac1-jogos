@@ -2,54 +2,95 @@ Inimigo = Classe:extend()
 
 function Inimigo:new(nome_inimigo, tipos_inimigos)
     --Imagem
-    self.img = love.graphics.newImage("/Sprites/personagens/" .. nome_inimigo .. ".png")
+    self.img = love.graphics.newImage("/recursos/imagens/" .. nome_inimigo .. ".png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
-    local g_inimigos = anim.newGrid(100, 100, self.largura_animacao, self.altura_animacao)
+    self.largura = 100
+    self.altura = 100
+
+    local g_inimigos = anim.newGrid(self.largura, self.altura, self.largura_animacao, self.altura_animacao)
     self.anim_inimigos = anim.newAnimation(g_inimigos('1-4', tipos_inimigos.op), 0.15)
 
     --Status inimigo
-    self.posicao = Vector(LARGURA_TELA + 100, 80)
-    self.velocidade = tipos_inimigos.velocidade
+    self.posicao = tipos_inimigos.pos
+    self.velocidade = tipos_inimigos.vel
     self.dano = tipos_inimigos.dano
     self.vida = tipos_inimigos.vida
     self.temp_vida = tipos_inimigos.vida
+    self.vel_max = tipos_inimigos.vel_max
+    self.raio_deteccao = tipos_inimigos.raio
+    self.raio_colisao = 45
+
+    self.vel_desejada = Vector(0, 0)
+    self.aceleracao = Vector(1, 1)
+    self.direcao_max = 5
+    self.direcao_des = Vector(0,0)
+    self.massa = 5
 
     self.barra_vida = 56
 
-    self.qtd_moeda_gerada = tipos_inimigos.qtd_moeda_gerada
-
-    -- Localização mapa
-    self.direcao = {"esq","esq", "baixo", "baixo", "baixo", "esq", "esq", "cima", "cima", "cima",
-                    "esq", "esq", "baixo", "baixo", "baixo", "esq", "esq", "esq"}
-
-    self.pos_objetivo = {800, 700, 180, 280, 380, 600, 500, 280, 180, 80, 400, 300, 180, 
-                         280, 380, 200, 100, 0}
-    self.i = 1
+    self.heroi_visivel = false
+    self.estado = "olhando_esq"
 end
 
 function Inimigo:update(dt)
     self.anim_inimigos:update(dt)
 
-    if self.direcao[self.i] == "esq" and self.posicao.x > self.pos_objetivo[self.i] then
-        self.posicao.x = self.posicao.x - self.velocidade * dt
-    elseif self.direcao[self.i] == "cima" and self.posicao.y > self.pos_objetivo[self.i] then
-        self.posicao.y = self.posicao.y - self.velocidade * dt
-    elseif self.direcao[self.i] == "baixo" and self.posicao.y < self.pos_objetivo[self.i] then
-        self.posicao.y = self.posicao.y + self.velocidade * dt
-    elseif self.i < #self.direcao then
-        self.i = self.i + 1
+    objetivo = heroi.posicao
+    objetivo = objetivo + Vector(heroi.largura/2, heroi.altura/2)
+
+    -- Definir qual lado o inimigo está olhando
+    if objetivo.x >= self.posicao.x then
+        self.estado = "olhando_dir"
+    else
+        self.estado = "olhando_esq"
     end
 
+    -- Verificar se o personagem(heroi) entrou na visão do inimigo
+    if self:checa_visao(objetivo) or heroi.estado_atirando then
+        self.heroi_visivel = true
+    end
+
+    -- Coloca o zumbi para seguir se tem heroi visivel
+    if self.heroi_visivel then
+        self.vel_desejada = objetivo - self.posicao
+        self.direcao_des = objetivo - (self.posicao + self.velocidade)
+        self.direcao_des = self.direcao_des:limit(self.direcao_max / self.massa)
+
+        self.velocidade = self.velocidade + self.direcao_des
+        self.velocidade = self.velocidade:limit(self.vel_max)
+
+        self.posicao = self.posicao + self.velocidade * dt
+    end
 end
 
 function Inimigo:draw()
-    self.anim_inimigos:draw(self.img, self.posicao.x, self.posicao.y, 0, -1, 1)
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("fill", self.posicao.x - 80, self.posicao.y - 10, 60, 10)
     love.graphics.setColor(1, 0, 0)
-    love.graphics.rectangle("fill", self.posicao.x - 78, self.posicao.y - 8, self.barra_vida, 6)
+    love.graphics.circle("line", objetivo.x, objetivo.y, 5)
+    love.graphics.setColor(0, 1, 0)
+    love.graphics.circle("fill", self.posicao.x, self.posicao.y, 5)
     love.graphics.setColor(1, 1, 1)
-    --love.graphics.circle("line", self.posicao.x - 50, self.posicao.y + 50, 150)
+
+    if self.estado == "olhando_esq" then
+        self.anim_inimigos:draw(self.img, self.posicao.x + self.largura/2, self.posicao.y - self.altura/2, 0, -1, 1)
+    else
+        self.anim_inimigos:draw(self.img, self.posicao.x - self.largura/2, self.posicao.y - self.altura/2, 0, 1, 1)
+    end
+    
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("fill", self.posicao.x - 80 + self.largura/2, self.posicao.y + 12 - self.altura/2, 60, 10)
+    love.graphics.setColor(1, 0, 0)
+    love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y + 10 - self.altura/2, self.barra_vida, 6)
+    love.graphics.setColor(1, 1, 1)
+    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_colisao)
     --love.graphics.print("vida: " ..self.vida, 10, 10)
+end
+
+function Inimigo:checa_visao(objeto)
+    if self.posicao.dist(objeto, self.posicao) <= self.raio_deteccao then
+        return true
+    else
+        return false
+    end 
 end
