@@ -65,9 +65,9 @@ function Personagem:update(dt)
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda')
+           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda', 2, 'heroi')
         elseif self.estado == 'parado_dir' then
-            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita')
+            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita', 2, 'heroi')
         end
         table.insert(self.tiros, tiro)
     end

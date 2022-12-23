@@ -31,11 +31,17 @@ function Inimigo:new(nome_inimigo, tipos_inimigos)
 
     self.heroi_visivel = false
     self.estado = "parado"
+
+    self.delay_dano = 0
 end
 
 function Inimigo:update(dt)
     self.anim_inimigos:update(dt)
     self.anim_inimigos_parado:update(dt)
+
+    if self.delay_dano >= 0.80 then
+        self.delay_dano = 0
+    end
 
     self.objetivo = heroi.posicao
     self.objetivo = self.objetivo + Vector(heroi.largura/2, heroi.altura/2)
@@ -85,7 +91,7 @@ function Inimigo:draw()
     love.graphics.setColor(1, 0, 0)
     love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y - self.altura/2, self.barra_vida, 6)
     love.graphics.setColor(1, 1, 1)
-    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
     love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
 
 end
