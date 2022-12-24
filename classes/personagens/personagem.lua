@@ -42,11 +42,15 @@ function Personagem:update(dt)
 
     -- Verifica se está andando para cima ou para baixo
     if love.keyboard.isDown("w") then
-        self.posicao.y = self.posicao.y - 150 * dt
-        self:verifica_estado_andando()
+        if self.posicao.y >= 0 then
+            self.posicao.y = self.posicao.y - 150 * dt
+            self:verifica_estado_andando()
+        end
     elseif love.keyboard.isDown("s") then
-        self.posicao.y = self.posicao.y + 150 * dt
-        self:verifica_estado_andando()
+        if self.posicao.y <= 600 - 100 then
+            self.posicao.y = self.posicao.y + 150 * dt
+            self:verifica_estado_andando()
+        end
     end
 
     -- verifica se o personagem estava atirando

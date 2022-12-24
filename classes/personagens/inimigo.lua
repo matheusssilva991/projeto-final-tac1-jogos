@@ -93,7 +93,6 @@ function Inimigo:draw()
     love.graphics.setColor(1, 1, 1)
     love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
     love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
-
 end
 
 function Inimigo:checa_visao(objeto)
