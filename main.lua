@@ -46,6 +46,7 @@ function love.update(dt)
             inimigos[i].delay_dano = inimigos[i].delay_dano + dt
         end
     end ]]
+
 end
 
 function love.draw()

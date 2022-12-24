@@ -19,6 +19,9 @@ function Personagem:new(x, y)
     self.raio = 35
     self.vida = 100
 
+    self.estado_anterior = nil
+    self.tempo_colisao = 0
+    self.vetor_direcao = Vector(0, 0)
 end
 
 function Personagem:update(dt)
@@ -30,23 +33,23 @@ function Personagem:update(dt)
     end
     
     -- Verifica se está andando pra esquerda ou direita
-    if love.keyboard.isDown("a") then
+    if love.keyboard.isDown("a") and self.estado ~= 'colidindo' then
         if self.posicao.x + self.largura / 2 - 150 * dt >= 0 then
             self.posicao.x = self.posicao.x - 150 * dt
         end
         self.estado = 'andando_esq'
-    elseif love.keyboard.isDown("d") then
+    elseif love.keyboard.isDown("d") and self.estado ~= 'colidindo' then
         self.posicao.x = self.posicao.x + 150 * dt
         self.estado = 'andando_dir'   
     end
 
     -- Verifica se está andando para cima ou para baixo
-    if love.keyboard.isDown("w") then
+    if love.keyboard.isDown("w") and self.estado ~= 'colidindo' then
         if self.posicao.y >= 0 then
             self.posicao.y = self.posicao.y - 150 * dt
             self:verifica_estado_andando()
         end
-    elseif love.keyboard.isDown("s") then
+    elseif love.keyboard.isDown("s") and self.estado ~= 'colidindo' then
         if self.posicao.y <= 600 - 100 then
             self.posicao.y = self.posicao.y + 150 * dt
             self:verifica_estado_andando()
@@ -61,6 +64,25 @@ function Personagem:update(dt)
         self.delay_tiro = self.delay_tiro + dt
     end
 
+    -- verifica se o personagem ainda está colidindo com o boss
+    if self.tempo_colisao <= 0.30 and self.estado == 'colidindo' then
+        self.tempo_colisao = self.tempo_colisao + dt
+        self.posicao = self.posicao + self.vetor_direcao * dt * 8
+    elseif self.tempo_colisao > 0.30 and self.estado == 'colidindo' then
+        self.tempo_colisao = 0
+        self.estado = 'andando_dir'
+    end
+
+    -- Verifica se colidiu com o boss
+    if verifica_colisao(self:get_posicao_normalizada(), self.raio, boss.posicao, boss.raio) and self.estado ~= 'colidindo' then
+        self.posicao_boss_colisao = boss.posicao
+        self.posicao_heroi_colisao = heroi.posicao
+        self.estado_anterior = self.estado
+        self.estado = 'colidindo'
+        self.vetor_direcao = self:get_posicao_normalizada() - boss.posicao
+
+    end
+
     -- Checa se o personagem  atirou
     local tmp_cond_parado = (self.estado == 'parado_esq' or self.estado == 'parado_dir')
     if love.mouse.isDown(1) and not self.atirando and tmp_cond_parado then
@@ -69,9 +91,9 @@ function Personagem:update(dt)
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda', 2, 'heroi')
+           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda', 2, 'heroi', 35)
         elseif self.estado == 'parado_dir' then
-            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita', 2, 'heroi')
+            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita', 2, 'heroi', 35)
         end
         table.insert(self.tiros, tiro)
     end
@@ -106,21 +128,22 @@ function Personagem:update(dt)
 end
 
 function Personagem:draw()
-    if self.estado == 'parado_esq' then -- Verifica se está parado olhando para esquerda
-        if self.atirando then   -- Verifica se está atirando para a esquerda
+    -- Verifica o estado e qual direção o heroi está olhando
+    if self.estado == 'parado_esq' or (self.estado_anterior == 'parado_esq' and self.estado == 'colidindo') then
+        if self.atirando then 
             self.animation_atirando:draw(self.img, self.posicao.x + self.largura, self.posicao.y, 0, -1, 1)
         else
             self.animation_parado:draw(self.img, self.posicao.x + self.largura, self.posicao.y, 0, -1, 1)
         end
-    elseif self.estado == 'parado_dir' then -- Verifica se está parado olhando para direita
-        if self.atirando then   -- Verifica se está atirando para a direita
+    elseif self.estado == 'parado_dir' or (self.estado_anterior == 'parado_dir' and self.estado == 'colidindo') then 
+        if self.atirando then  
             self.animation_atirando:draw(self.img, self.posicao.x, self.posicao.y, 0, 1, 1)
         else
             self.animation_parado:draw(self.img, self.posicao.x, self.posicao.y, 0, 1, 1)
         end
-    elseif self.estado == 'andando_esq' then -- Verifica se está andando olhando para esquerda
+    elseif self.estado == 'andando_esq' or (self.estado_anterior == 'andando_esq' and self.estado == 'colidindo') then 
         self.animation_andando:draw(self.img, self.posicao.x + self.largura, self.posicao.y, 0, -1, 1)
-    elseif self.estado == 'andando_dir' then -- Verifica se está andando olhando para direita
+    elseif self.estado == 'andando_dir' or (self.estado_anterior == 'andando_dir' and self.estado == 'colidindo') then 
         self.animation_andando:draw(self.img, self.posicao.x, self.posicao.y, 0, 1, 1)
     end
     
