@@ -14,7 +14,7 @@ function Boss:new(nome_inimigo, tipo_boss)
     --Status inimigo
     self.posicao = Vector(700, 300)
     self.dano = tipo_boss.dano
-    self.vida = tipo_boss.vida
+    self.vida = 1000
     self.temp_vida = tipo_boss.vida
     self.barra_vida = 56
     self.raio = 100

@@ -21,7 +21,7 @@ function Inimigo:new(nome_inimigo, tipos_inimigos)
     self.vida = tipos_inimigos.vida
     self.temp_vida = tipos_inimigos.vida
     self.barra_vida = 56
-    self.raio = 40
+    self.raio = 50
 
     self.vel_desejada = Vector(0, 0)
     self.aceleracao = Vector(1, 1)
