@@ -12,32 +12,42 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.anim_boss_parado = anim.newAnimation(g_inimigos('1-1', tipo_boss.op), 0.15)
 
     --Status inimigo
-    self.posicao = Vector(700, 300)
+    self.posicao = Vector(2325, 375)
     self.dano = tipo_boss.dano
     self.vida = 1000
     self.temp_vida = tipo_boss.vida
     self.barra_vida = 56
     self.raio = 70
+    self.raio_deteccao = 450
 
     self.estado_mov = 'descendo'
     self.estado_ataque = 'normal'
     self.direcao_olhando = 'esquerda'
     self.delay_ataque_tiro = 0 -- tempo entre os ataques de tiro
-    self.delay_ataque_avanco = 10 -- tempo para ataque de avanço
+    self.delay_ataque_avanco = 0 -- tempo para ataque de avanço
     self.tempo_ataque = 0 -- tempo alternar modos de ataques
     self.tiros = {}
     self.posicao_heroi = heroi:get_posicao_normalizada()
     self.delay_dano = 0 -- tempo de espera para dar dano no heroi
+    self.heroi_visivel = false
 end
 
 function Boss:update(dt)
     self.anim_boss:update(dt)
     self.anim_boss_parado:update(dt)
 
-    self.delay_ataque_avanco = self.delay_ataque_avanco + dt
-    self.delay_ataque_tiro = self.delay_ataque_tiro + dt
-    self.tempo_ataque = self.tempo_ataque + dt
+    -- Verifica se o heroi está atirando e se o boss escutou o tiro
+    if heroi.atirando and verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao) then
+        self.heroi_visivel = true
+    end
 
+    -- Atualiza os tempos de recarga se o boss viu o heroi
+    if self.heroi_visivel then
+        self.delay_ataque_avanco = self.delay_ataque_avanco + dt
+        self.delay_ataque_tiro = self.delay_ataque_tiro + dt
+        self.tempo_ataque = self.tempo_ataque + dt
+    end
+    
     -- Tempo para dar dano novamente no heroi
     if heroi.estado == 'colidindo' then
         self.delay_dano = self.delay_dano + dt
@@ -117,12 +127,12 @@ function Boss:update(dt)
     end
 
     -- Verifica se terminou o avanço
-    if self.posicao.x <= 50 and self.estado_ataque == 'avanco' and self.direcao_olhando == 'esquerda' then
+    if self.posicao.x <= 1675 and self.estado_ataque == 'avanco' and self.direcao_olhando == 'esquerda' then
         self.estado_ataque = 'normal'
         self.direcao_olhando = 'direita'
         self.delay_ataque_avanco = 0
         self.delay_ataque_tiro = 0
-    elseif self.posicao.x >= 700 and self.estado_ataque == 'avanco' and self.direcao_olhando == 'direita' then
+    elseif self.posicao.x >= 2325 and self.estado_ataque == 'avanco' and self.direcao_olhando == 'direita' then
         self.estado_ataque = 'normal'
         self.direcao_olhando = 'esquerda'
         self.delay_ataque_avanco = 0
@@ -145,9 +155,9 @@ function Boss:draw()
         love.graphics.setLineWidth(100)
 
         if self.direcao_olhando == 'esquerda' then -- Boss está olhando pra esquerda
-            love.graphics.line(0, self.posicao_heroi.y/escala, self.posicao.x/escala + 40, self.posicao.y/escala)
+            love.graphics.line(1600, self.posicao_heroi.y/escala, self.posicao.x/escala + 40, self.posicao.y/escala)
         elseif self.direcao_olhando == 'direita' then -- Boss olhando para direita
-            love.graphics.line(self.posicao.x/escala - 40, self.posicao.y/escala, 800, self.posicao_heroi.y/escala)
+            love.graphics.line(self.posicao.x/escala - 40, self.posicao.y/escala, 2400, self.posicao_heroi.y/escala)
         end
         
         love.graphics.setLineWidth(1)
@@ -169,7 +179,7 @@ function Boss:draw()
             self.anim_boss:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         end
         
-        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
     end
     
     love.graphics.pop()  

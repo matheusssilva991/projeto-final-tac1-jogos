@@ -144,6 +144,7 @@ function Personagem:update(dt)
                 if self.tiros[i].direcao == 'direita' and colisao_boss then --Verifica quem o tiro acertou primeiro direita
                     if boss.posicao.x < inimigos[i].posicao.x then
                         boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
+                        boss.heroi_visivel = true
                     else
                         inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
                         inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
@@ -153,6 +154,7 @@ function Personagem:update(dt)
                 elseif self.tiros[i].direcao == 'esquerda' and colisao_boss then --Verifica quem o tiro acertou primeiro esq
                     if boss.posicao.x > inimigos[i].posicao.x then
                         boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
+                        boss.heroi_visivel = true
                     else
                         inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
                         inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
@@ -179,6 +181,7 @@ function Personagem:update(dt)
         if colisao_boss and not colisao_zumbi then
             boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
             table.remove(self.tiros, i)  
+            boss.heroi_visivel = true
         elseif not colisao_boss and not colisao_zumbi and self.tiros[i].distancia_tiro >= 800 then
             table.remove(self.tiros, i)
         end

@@ -22,15 +22,15 @@ function Tiro:update(dt)
     -- Verifica tiros do boss
     elseif self.direcao == 'esquerda' and self.tipo_tiro == 'boss' then
         if self.posicao_heroi.y >= self.posicao_boss.y then -- Tiro baixo esquerda
-            self.posicao = self.posicao - Vector(500, -self.vel_y_tiro) * dt
+            self.posicao = self.posicao - Vector(400, -self.vel_y_tiro) * dt
         elseif self.posicao_heroi.y < self.posicao_boss.y then -- Tiro cima esquerda
-            self.posicao = self.posicao - Vector(500, self.vel_y_tiro) * dt
+            self.posicao = self.posicao - Vector(400, self.vel_y_tiro) * dt
         end   
     elseif self.direcao == 'direita' and self.tipo_tiro == 'boss' then
         if self.posicao_heroi.y >= self.posicao_boss.y then -- Tiro baixo direita
-            self.posicao = self.posicao + Vector(500, self.vel_y_tiro) * dt
+            self.posicao = self.posicao + Vector(400, self.vel_y_tiro) * dt
         elseif self.posicao_heroi.y < self.posicao_boss.y then -- Tiro cima direita
-            self.posicao = self.posicao + Vector(500, -self.vel_y_tiro) * dt  
+            self.posicao = self.posicao + Vector(400, -self.vel_y_tiro) * dt  
         end
     end 
 
