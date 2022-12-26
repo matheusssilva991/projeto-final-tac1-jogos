@@ -67,20 +67,32 @@ function Personagem:update(dt)
     -- verifica se o personagem ainda está colidindo com o boss
     if self.tempo_colisao <= 0.30 and self.estado == 'colidindo' then
         self.tempo_colisao = self.tempo_colisao + dt
-        self.posicao = self.posicao + self.vetor_direcao * dt * 8
+        self.posicao = self.posicao + self.vetor_direcao * dt * 6
     elseif self.tempo_colisao > 0.30 and self.estado == 'colidindo' then
         self.tempo_colisao = 0
         self.estado = 'andando_dir'
     end
 
+    -- verifica se colidiu com algum zumbi
+    for i=1, #inimigos do
+        if verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, inimigos[i].posicao, inimigos[i].raio) then
+            inimigos[i].colidindo = true
+            if inimigos[i].delay_dano == 0 then
+                heroi.vida = math.max(heroi.vida - inimigos[i].dano, 0)
+            end
+        end
+    end
+
     -- Verifica se colidiu com o boss
     if verifica_colisao(self:get_posicao_normalizada(), self.raio, boss.posicao, boss.raio) and self.estado ~= 'colidindo' then
-        self.posicao_boss_colisao = boss.posicao
-        self.posicao_heroi_colisao = heroi.posicao
         self.estado_anterior = self.estado
         self.estado = 'colidindo'
         self.vetor_direcao = self:get_posicao_normalizada() - boss.posicao
+        self.tipo_colisao = 'boss'
 
+        if boss.delay_dano == 0 then
+            self.vida = math.max(self.vida - boss.dano, 0) 
+        end
     end
 
     -- Checa se o personagem  atirou
@@ -104,21 +116,51 @@ function Personagem:update(dt)
     
         local cond_loop = true
         local j = 1
+        local colisao_boss = false
+        local colisao_zumbi = false
 
-        -- Verifica se o tiro colidiu com algum inimigo
+        if verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, boss.posicao, boss.raio) then
+            colisao_boss = true
+        end
+
+        -- Verifica se o tiro colidiu com algum zumbi
         while j <= #inimigos and cond_loop do
             if verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, inimigos[j].posicao, inimigos[j].raio) then
-                inimigos[j].vida = inimigos[j].vida - self.tiros[i].dano
-                inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
+                if self.tiros[i].direcao == 'direita' and colisao_boss then --Verifica quem o tiro acertou primeiro direita
+                    if boss.posicao.x < inimigos[i].posicao.x then
+                        boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
+                    else
+                        inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
+                        inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
+                        colisao_zumbi = true    
+                    end
+                elseif self.tiros[i].direcao == 'esquerda' and colisao_boss then --Verifica quem o tiro acertou primeiro esq
+                    if boss.posicao.x > inimigos[i].posicao.x then
+                        boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
+                    else
+                        inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
+                        inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
+                        colisao_zumbi = true  
+                    end
+                else -- não atingiu boss, apenas zumbi
+                    inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
+                    inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
+                    colisao_zumbi = true  
+                end  
 
-                cond_loop = false
-                table.remove(self.tiros, i)
-
-                if inimigos[j].vida < 0 then
+                if inimigos[j].vida <= 0 then
                     table.remove(inimigos, j)
                 end
+
+                cond_loop = false
+                table.remove(self.tiros, i)   
             end
             j=j+1
+        end
+
+        if colisao_boss and not colisao_zumbi then
+            boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
+            table.remove(self.tiros, i)  
         end
     end
     

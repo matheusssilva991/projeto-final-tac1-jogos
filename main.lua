@@ -2,10 +2,10 @@ LARGURA_TELA, ALTURA_TELA = love.graphics.getDimensions()
 
 Vector = require "classes/vector"
 
-tipos_inimigos = {{vel = Vector(40, 40), pos = Vector(0, 0), dano=5, vida=400, op=1, vel_max=80, raio=150},
-                  {vel = Vector(15, 15), pos = Vector(0, 0), dano=5, vida=200, op=2, vel_max=30, raio=100},
-                  {vel = Vector(30, 30), pos = Vector(0, 0), dano=5, vida=200, op=3, vel_max=60, raio=120},
-                  {vel = Vector(25, 25), pos = Vector(0, 0), dano=15, vida=200, op=4, vel_max=50, raio=100}}
+tipos_inimigos = {{vel = Vector(40, 40), pos = Vector(100, 500), dano=5, vida=100, op=1, vel_max=80, raio=150},
+                  {vel = Vector(15, 15), pos = Vector(300, 400), dano=5, vida=100, op=2, vel_max=30, raio=100},
+                  {vel = Vector(30, 30), pos = Vector(600, 300), dano=5, vida=100, op=3, vel_max=60, raio=120},
+                  {vel = Vector(25, 25), pos = Vector(400, 100), dano=15, vida=100, op=4, vel_max=50, raio=100}}
 
 function love.load()
     Classe = require "classes/classic"
@@ -23,29 +23,15 @@ function love.load()
                 Inimigo("inimigos", tipos_inimigos[4])}
 
     boss = Boss("inimigos", tipos_inimigos[2])
-
-    colidindo = false
 end
 
 function love.update(dt)
     heroi:update(dt)
     boss:update(dt)
     
-    colidindo = false
-    
-    --[[ for i=1, #inimigos do
+    for i=1, #inimigos do
         inimigos[i]:update(dt)
-
-        if verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, inimigos[i].posicao, inimigos[i].raio) then
-            colidindo = true
-
-            if inimigos[i].delay_dano == 0 then
-                heroi.vida = heroi.vida - inimigos[i].dano
-            end
-
-            inimigos[i].delay_dano = inimigos[i].delay_dano + dt
-        end
-    end ]]
+    end
 
 end
 
@@ -53,9 +39,9 @@ function love.draw()
     boss:draw()
     heroi:draw()
     
-    --[[ for i=1, #inimigos do
+    for i=1, #inimigos do
         inimigos[i]:draw()
-    end ]]
+    end
 
     love.graphics.print("Vida: " .. heroi.vida, 10, 10)
 end

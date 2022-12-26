@@ -33,6 +33,7 @@ function Inimigo:new(nome_inimigo, tipos_inimigos)
     self.estado = "parado"
 
     self.delay_dano = 0
+    self.colidindo = false
 end
 
 function Inimigo:update(dt)
@@ -41,8 +42,14 @@ function Inimigo:update(dt)
 
     if self.delay_dano >= 0.80 then
         self.delay_dano = 0
+        self.colidindo = false
     end
 
+    -- Tempo para dar dano novamente no heroi
+    if self.colidindo then
+        self.delay_dano = self.delay_dano + dt
+    end
+    
     self.objetivo = heroi.posicao
     self.objetivo = self.objetivo + Vector(heroi.largura/2, heroi.altura/2)
 
