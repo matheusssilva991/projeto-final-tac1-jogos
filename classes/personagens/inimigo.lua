@@ -2,7 +2,7 @@ Inimigo = Classe:extend()
 
 function Inimigo:new(nome_inimigo, tipos_inimigos)
     --Imagem
-    self.img = love.graphics.newImage("/recursos/imagens/" .. nome_inimigo .. ".png")
+    self.img = love.graphics.newImage("/materials/chars/" .. nome_inimigo .. ".png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
     self.largura = 100
@@ -61,7 +61,8 @@ function Inimigo:update(dt)
     end
 
     -- Verificar se o personagem(heroi) entrou na visão do inimigo
-    if self:checa_visao(self.objetivo) or heroi.atirando then
+    local escutou_tiro = (heroi.atirando and verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao))
+    if self:checa_visao(self.objetivo) or escutou_tiro then
         self.heroi_visivel = true
     end
 

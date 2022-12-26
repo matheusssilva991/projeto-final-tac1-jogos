@@ -1,7 +1,7 @@
 Personagem = Classe:extend()
 
 function Personagem:new(x, y)
-    self.img = love.graphics.newImage("recursos/imagens/personagem.png")
+    self.img = love.graphics.newImage("materials/chars/personagem.png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
     self.largura = self.largura_animacao/8
@@ -17,6 +17,7 @@ function Personagem:new(x, y)
     self.tiros = {}
     self.delay_tiro = 0
     self.raio = 35
+    self.raio_tiro = 300
     self.vida = 100
 
     self.estado_anterior = nil
@@ -34,23 +35,25 @@ function Personagem:update(dt)
     
     -- Verifica se está andando pra esquerda ou direita
     if love.keyboard.isDown("a") and self.estado ~= 'colidindo' then
-        if self.posicao.x + self.largura / 2 - 150 * dt >= 0 then
+        if self.posicao.x + self.largura / 2 - 150 * dt >= 20 then
             self.posicao.x = self.posicao.x - 150 * dt
         end
         self.estado = 'andando_esq'
     elseif love.keyboard.isDown("d") and self.estado ~= 'colidindo' then
-        self.posicao.x = self.posicao.x + 150 * dt
+        if self.posicao.x + self.largura / 2 + 150 * dt <= bg.larg - 20 then
+            self.posicao.x = self.posicao.x + 150 * dt
+        end
         self.estado = 'andando_dir'   
     end
 
     -- Verifica se está andando para cima ou para baixo
     if love.keyboard.isDown("w") and self.estado ~= 'colidindo' then
-        if self.posicao.y >= 0 then
+        if self.posicao.y >= 150 then
             self.posicao.y = self.posicao.y - 150 * dt
             self:verifica_estado_andando()
         end
     elseif love.keyboard.isDown("s") and self.estado ~= 'colidindo' then
-        if self.posicao.y <= 600 - 100 then
+        if self.posicao.y <= 425 then
             self.posicao.y = self.posicao.y + 150 * dt
             self:verifica_estado_andando()
         end
@@ -67,7 +70,19 @@ function Personagem:update(dt)
     -- verifica se o personagem ainda está colidindo com o boss
     if self.tempo_colisao <= 0.30 and self.estado == 'colidindo' then
         self.tempo_colisao = self.tempo_colisao + dt
-        self.posicao = self.posicao + self.vetor_direcao * dt * 6
+        self.posicao = self.posicao + self.vetor_direcao * dt * 4
+
+        if self.posicao.x < 20  then
+            self.posicao.x = 20
+        elseif self.posicao.x >  bg.larg - 20 then
+            self.posicao.x = bg.larg - 20
+        end  
+
+        if self.posicao.y > 425 then
+            self.posicao.y = 425
+        elseif self.posicao.y < 150 then
+            self.posicao.y = 150
+        end
     elseif self.tempo_colisao > 0.30 and self.estado == 'colidindo' then
         self.tempo_colisao = 0
         self.estado = 'andando_dir'
@@ -132,7 +147,8 @@ function Personagem:update(dt)
                     else
                         inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
                         inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
-                        colisao_zumbi = true    
+                        colisao_zumbi = true
+                        inimigos[j].heroi_visivel = true    
                     end
                 elseif self.tiros[i].direcao == 'esquerda' and colisao_boss then --Verifica quem o tiro acertou primeiro esq
                     if boss.posicao.x > inimigos[i].posicao.x then
@@ -141,11 +157,13 @@ function Personagem:update(dt)
                         inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
                         inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
                         colisao_zumbi = true  
+                        inimigos[j].heroi_visivel = true 
                     end
                 else -- não atingiu boss, apenas zumbi
                     inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
                     inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
                     colisao_zumbi = true  
+                    inimigos[j].heroi_visivel = true 
                 end  
 
                 if inimigos[j].vida <= 0 then
@@ -161,6 +179,8 @@ function Personagem:update(dt)
         if colisao_boss and not colisao_zumbi then
             boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
             table.remove(self.tiros, i)  
+        elseif not colisao_boss and not colisao_zumbi and self.tiros[i].distancia_tiro >= 800 then
+            table.remove(self.tiros, i)
         end
     end
     
@@ -194,6 +214,7 @@ function Personagem:draw()
     end
 
     love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio)
+    --love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio_tiro)
 end
 
 function Personagem:verifica_estado_andando()

@@ -1,7 +1,7 @@
 Boss = Classe:extend()
 
 function Boss:new(nome_inimigo, tipo_boss)
-    self.img = love.graphics.newImage("/recursos/imagens/" .. nome_inimigo .. ".png")
+    self.img = love.graphics.newImage("/materials/chars/" .. nome_inimigo .. ".png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
     self.largura = 100
@@ -17,7 +17,7 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.vida = 1000
     self.temp_vida = tipo_boss.vida
     self.barra_vida = 56
-    self.raio = 100
+    self.raio = 70
 
     self.estado_mov = 'descendo'
     self.estado_ataque = 'normal'
@@ -49,12 +49,6 @@ function Boss:update(dt)
     if self.delay_ataque_avanco >= 13 and self.delay_ataque_avanco <= 14 then
         self.estado_ataque = 'carregar avanco'
         self.posicao_heroi = heroi:get_posicao_normalizada()
-
-        --[[ if self.posicao_heroi.y <= 200 then
-            self.posicao_heroi = Vector(self.posicao_heroi.x, 200)
-        elseif self.posicao_heroi.y >= 600 then
-            self.posicao_heroi = Vector(self.posicao_heroi.x, 600)
-        end ]]
     elseif self.estado_ataque == 'carregar avanco' and self.delay_ataque_avanco > 15 then
         self.estado_ataque = 'avanco'
         self.tempo_ataque = 0
@@ -69,11 +63,11 @@ function Boss:update(dt)
     end
 
     -- Verifica se está no modo de ataque tiro
-    if self.delay_ataque_tiro >= 0.30 and self.estado_ataque == 'tiro' then
+    if self.delay_ataque_tiro >= 0.40 and self.estado_ataque == 'tiro' then
         if self.posicao.x >= heroi:get_posicao_normalizada().x then
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 20, 'boss', 16))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', 16))
         else
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 20, 'boss', 16))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', 16))
         end
         self.delay_ataque_tiro = 0
     end
@@ -141,8 +135,9 @@ function Boss:draw()
         self.tiros[i]:draw()
     end
 
+    local escala = 1.5
     love.graphics.push()
-    love.graphics.scale(2, 2)
+    love.graphics.scale(escala, escala)
 
     -- Linha de ataque avanço frontal
     if self.estado_ataque == 'carregar avanco' or self.estado_ataque == 'avanco' then
@@ -150,9 +145,9 @@ function Boss:draw()
         love.graphics.setLineWidth(100)
 
         if self.direcao_olhando == 'esquerda' then -- Boss está olhando pra esquerda
-            love.graphics.line(0, self.posicao_heroi.y/2, self.posicao.x/2 + 40, self.posicao.y/2 + 10)
+            love.graphics.line(0, self.posicao_heroi.y/escala, self.posicao.x/escala + 40, self.posicao.y/escala)
         elseif self.direcao_olhando == 'direita' then -- Boss olhando para direita
-            love.graphics.line(self.posicao.x/2, self.posicao.y/2 + 10, 800, self.posicao_heroi.y/2)
+            love.graphics.line(self.posicao.x/escala - 40, self.posicao.y/escala, 800, self.posicao_heroi.y/escala)
         end
         
         love.graphics.setLineWidth(1)
@@ -162,19 +157,19 @@ function Boss:draw()
     -- Desenha o Boss
     if self.direcao_olhando == 'direita' then
         if self.estado_ataque == 'carregar avanco' then
-            self.anim_boss_parado:draw(self.img, self.posicao.x/2 - self.largura/4, self.posicao.y/2 - self.altura/4-25, 0, 1, 1)
+            self.anim_boss_parado:draw(self.img, self.posicao.x/escala - self.largura/2*escala + 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, 1, 1)
         else
-            self.anim_boss:draw(self.img, self.posicao.x/2 - self.largura/4 - 20, self.posicao.y/2 - self.altura/4 - 25, 0, 1, 1)
+            self.anim_boss:draw(self.img, self.posicao.x/escala - self.largura/2*escala + 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, 1, 1)
         end
-        love.graphics.circle("line", self.posicao.x/2, self.posicao.y/2, self.raio/2)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
     elseif self.direcao_olhando == 'esquerda' then
         if self.estado_ataque == 'carregar avanco'then
-            self.anim_boss_parado:draw(self.img, self.posicao.x/2+self.largura/4+20, self.posicao.y/2-self.altura/4-25, 0, -1, 1)
+            self.anim_boss_parado:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         else
-            self.anim_boss:draw(self.img, self.posicao.x/2 + self.largura/4 + 20, self.posicao.y/2 - self.altura/4-25, 0, -1, 1)
+            self.anim_boss:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         end
         
-        love.graphics.circle("line", self.posicao.x/2, self.posicao.y/2, self.raio/2)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
     end
     
     love.graphics.pop()  
