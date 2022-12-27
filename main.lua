@@ -5,6 +5,7 @@ function love.load()
     Vector = require "classes/vector"
     camera = require "classes/camera"
     anim = require "classes/anim8"
+    wf = require "classes/windfield"
     
     require "classes/hud/background"
     require "classes/hud/startmenu"
@@ -27,6 +28,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    jogo:draw() 
+    jogo:draw()
+    --love.graphics.print("FPS: ".. love.timer.getFPS(), 10, 10)
 end
 

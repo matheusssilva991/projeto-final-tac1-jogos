@@ -2,52 +2,50 @@ Start = Classe:extend()
 
 ALTURA_BOTAO = 50
 
-function newButton(text, fn)
+local function newButton(text, fn)
     return{
         text = text,
-        fn = fn
+        fn = fn,
+
+        now = false,
+        last = false
     }
 end
 
-local butoes = {}
+local botoes = {}
+local font = nil
 
 function Start:new()
+    font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
+    opc = 0
 
-    table.insert(butoes, newButton(
+    table.insert(botoes, newButton(
         "Jogar",
         function()
-            print("Iniciando jogo")
+            opc = 1
         end
     ))
 
-    table.insert(butoes, newButton(
+    table.insert(botoes, newButton(
         "Ranking",
         function()
-            print("Abrindo Ranking")
+            opc = 2
         end
     ))
 
-    table.insert(butoes, newButton(
+    table.insert(botoes, newButton(
         "Ajuda",
         function()
-            print("Abrindo Ajuda")
+            opc = 3
         end
     ))
 
-    table.insert(butoes, newButton(
+    table.insert(botoes, newButton(
         "Sair",
         function()
             love.event.quit(0)
         end
     ))
-    --[[ --self.forma_x = posicao_mouse.x
-    --self.forma_y = posicao_mouse.y
-    self.startScreenX = (LARGURA_TELA - 300)/2
-    self.startScreenY = (ALTURA_TELA - 500)/2
-
-    self.btnX = self.startScreenX + 25
-    self.btnLarg = 250
-    self.btnAlt = 50 ]]
 
 end
 
@@ -56,35 +54,68 @@ end
 
 function Start:draw()
     local larg_botao = 250
+    local margem = 20
 
-    for i, butoes in ipairs(butoes) do
+    local total_altura = (ALTURA_BOTAO + margem) * #botoes
+    local cursor_y = 0
+
+    for i, botao in ipairs(botoes) do
+        botao.last = botao.now
+
+        local bx = (LARGURA_TELA * 0.5) - (larg_botao * 0.5)
+        local by = (ALTURA_TELA * 0.5) - (total_altura * 0.5) + cursor_y
+
+        local color = {0.3, 0, 0.5, 1}
+        local mx, my = love.mouse.getPosition()
+        local hot = mx > bx and mx < bx + larg_botao and
+                    my > by and my < by + ALTURA_BOTAO
+
+        if hot then
+            color = {0, 0.4, 0, 1}
+        end
+
+        botao.now = love.mouse.isDown(1)
+
+        if botao.now and not botao.last and hot then
+            botao.fn()
+        end
+
+        love.graphics.setColor(unpack(color))
         love.graphics.rectangle(
             "fill",
-            (LARGURA_TELA*0.5) - (larg_botao*0.5),
-            (ALTURA_TELA*0.5) - (ALTURA_BOTAO*0.5),
+            bx,
+            by,
             larg_botao,
             ALTURA_BOTAO,
             20, 20)
+        love.graphics.setColor(1, 1, 1)
+        
+        love.graphics.rectangle(
+            "line",
+            bx,
+            by,
+            larg_botao,
+            ALTURA_BOTAO,
+            20, 20)
+
+        local textLarg = font:getWidth(botao.text)
+        local textAlt = font:getHeight(botao.text)
+
+        love.graphics.print(
+            botao.text,
+            font,
+            (LARGURA_TELA * 0.5) - textLarg * 0.5,
+            by + textAlt * 0.25
+        )
+
+        cursor_y = cursor_y + (ALTURA_BOTAO + margem)
     end
+
+    --love.graphics.print("opc: " .. opc, 10, 60)
 
     --[[ love.graphics.setColor(0.3, 0, 0.5)
     love.graphics.rectangle("fill", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
     love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("line", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    font:getHeight()
-
-    love.graphics.setColor(0.3, 0, 1)
-    love.graphics.rectangle("fill", self.btnX, self.startScreenY+200, self.btnLarg, self.btnAlt, 20, 20)
-    love.graphics.rectangle("fill", self.btnX, self.startScreenY+200+self.btnAlt+20, self.btnLarg, self.btnAlt, 20, 20)
-    love.graphics.rectangle("fill", self.btnX, self.startScreenY+200+self.btnAlt*2+20*2, self.btnLarg, self.btnAlt, 20, 20)
-    love.graphics.setColor(1, 1, 1)
-
-    love.graphics.rectangle("line", self.btnX, self.startScreenY+200, self.btnLarg, self.btnAlt, 20, 20)
-    love.graphics.print("Jogar", self.btnX+(250-font:getWidth("Jogar"))/2, self.startScreenY+210)
-
-    love.graphics.rectangle("line", self.btnX, self.startScreenY+200+self.btnAlt+20, self.btnLarg, self.btnAlt, 20, 20)
-    love.graphics.print("Ajuda", self.btnX+(250-font:getWidth("Ajuda"))/2, self.startScreenY+210+self.btnAlt+20)
-
-    love.graphics.rectangle("line", self.btnX, self.startScreenY+200+self.btnAlt*2+20*2, self.btnLarg, self.btnAlt, 20, 20)
-    love.graphics.print("Sair", self.btnX+(250-font:getWidth("Sair"))/2, self.startScreenY+210+self.btnAlt*2+20*2) ]]
+    ]]
 end

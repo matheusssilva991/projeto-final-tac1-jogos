@@ -5,14 +5,17 @@ function Caixa:new()
     self.larg = self.img:getWidth()
     self.alt = self.img:getHeight()
 
-    self.larg_frame = self.larg/2
-    self.alt_frame = self.alt/2
+    self.larg_frame = self.larg/4
+    self.alt_frame = self.alt/3
 
-    self.x = 0
-    self.y = (ALTURA_TELA-self.alt)/2
+    self.x = (LARGURA_TELA/2)-self.larg_frame/2
+    self.y = (ALTURA_TELA/2)-self.alt_frame/2
 
     local grid = anim.newGrid(self.larg_frame, self.alt_frame, self.larg, self.alt)
-    self.animation = anim.newAnimation(grid('1-2', 1, '1-2', 2), 0.1)
+    self.animation = anim.newAnimation(grid('1-4', 1, '1-4', 2, '1-4', 3), 0.1)
+
+    self.collider = world:newBSGRectangleCollider(self.x+10, self.y+60, self.larg_frame-20, self.alt_frame-70, 0)
+    self.collider:setType('static')
 
 end
 
@@ -21,5 +24,5 @@ function Caixa:update(dt)
 end
 
 function Caixa:draw()
-    self.animation:draw(self.img, (LARGURA_TELA/2)-self.larg_frame/2, (ALTURA_TELA/2)-self.alt_frame/2)
+    self.animation:draw(self.img, self.x, self.y)
 end

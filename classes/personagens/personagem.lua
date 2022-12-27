@@ -19,10 +19,14 @@ function Personagem:new(x, y)
     self.raio = 35
     self.raio_tiro = 300
     self.vida = 100
+    self.vel = 300
 
     self.estado_anterior = nil
     self.tempo_colisao = 0
     self.vetor_direcao = Vector(0, 0)
+
+    self.collider = world:newBSGRectangleCollider(self.posicao.x+30, self.posicao.y+10, self.largura-60, self.altura-80, 0)
+    self.collider:setFixedRotation(true)
 end
 
 function Personagem:update(dt)
@@ -32,31 +36,26 @@ function Personagem:update(dt)
     elseif self.estado == 'andando_esq' or self.estado == 'parado_esq' then
         self.estado = 'parado_esq'
     end
+
+    local vx = 0
+    local vy = 0
     
     -- Verifica se está andando pra esquerda ou direita
     if love.keyboard.isDown("a") and self.estado ~= 'colidindo' then
-        if self.posicao.x + self.largura / 2 - 150 * dt >= 20 then
-            self.posicao.x = self.posicao.x - 150 * dt
-        end
+        vx = self.vel * -1
         self.estado = 'andando_esq'
     elseif love.keyboard.isDown("d") and self.estado ~= 'colidindo' then
-        if self.posicao.x + self.largura / 2 + 150 * dt <= bg.larg - 20 then
-            self.posicao.x = self.posicao.x + 150 * dt
-        end
+        vx = self.vel
         self.estado = 'andando_dir'   
     end
 
     -- Verifica se está andando para cima ou para baixo
     if love.keyboard.isDown("w") and self.estado ~= 'colidindo' then
-        if self.posicao.y >= 150 then
-            self.posicao.y = self.posicao.y - 150 * dt
-            self:verifica_estado_andando()
-        end
+        vy = self.vel * -1
+        self:verifica_estado_andando()
     elseif love.keyboard.isDown("s") and self.estado ~= 'colidindo' then
-        if self.posicao.y <= 425 then
-            self.posicao.y = self.posicao.y + 150 * dt
-            self:verifica_estado_andando()
-        end
+        vy = self.vel
+        self:verifica_estado_andando()
     end
 
     -- verifica se o personagem estava atirando
@@ -70,23 +69,26 @@ function Personagem:update(dt)
     -- verifica se o personagem ainda está colidindo com o boss
     if self.tempo_colisao <= 0.30 and self.estado == 'colidindo' then
         self.tempo_colisao = self.tempo_colisao + dt
-        self.posicao = self.posicao + self.vetor_direcao * dt * 4
+        vx = self.vetor_direcao.x * 4
+        vy = self.vetor_direcao.y * 4
 
         if self.posicao.x < 20  then
-            self.posicao.x = 20
+            vx = 0
         elseif self.posicao.x >  bg.larg - 20 then
-            self.posicao.x = bg.larg - 20
+            vx = 0
         end  
 
         if self.posicao.y > 425 then
-            self.posicao.y = 425
+            vy = 0
         elseif self.posicao.y < 150 then
-            self.posicao.y = 150
+            vy = 0
         end
     elseif self.tempo_colisao > 0.30 and self.estado == 'colidindo' then
         self.tempo_colisao = 0
         self.estado = 'andando_dir'
     end
+
+    self.collider:setLinearVelocity(vx, vy)
 
     -- verifica se colidiu com algum zumbi
     for i=1, #inimigos do

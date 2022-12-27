@@ -1,6 +1,6 @@
 Inimigo = Classe:extend()
 
-function Inimigo:new(nome_inimigo, tipos_inimigos)
+function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     --Imagem
     self.img = love.graphics.newImage("/materials/chars/" .. nome_inimigo .. ".png")
     self.largura_animacao = self.img:getWidth()
@@ -13,7 +13,7 @@ function Inimigo:new(nome_inimigo, tipos_inimigos)
     self.anim_inimigos_parado = anim.newAnimation(g_inimigos('1-1', tipos_inimigos.op), 0.15)
 
     --Status inimigo
-    self.posicao = tipos_inimigos.pos
+    self.posicao = posicao
     self.velocidade = tipos_inimigos.vel
     self.dano = tipos_inimigos.dano
     self.vel_max = tipos_inimigos.vel_max

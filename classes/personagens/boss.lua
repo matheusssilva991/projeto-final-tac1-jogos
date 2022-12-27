@@ -22,7 +22,7 @@ function Boss:new(nome_inimigo, tipo_boss)
 
     self.estado_mov = 'descendo'
     self.estado_ataque = 'normal'
-    self.direcao_olhando = 'esquerda'
+    self.direcao_olhando = 'direita'
     self.delay_ataque_tiro = 0 -- tempo entre os ataques de tiro
     self.delay_ataque_avanco = 0 -- tempo para ataque de avanço
     self.tempo_ataque = 2.5 -- tempo alternar modos de ataques
@@ -40,7 +40,10 @@ function Boss:update(dt)
     local escutou_tomou_tiro = verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao)
     local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
     if (heroi.atirando and escutou_tomou_tiro) or viu_heroi then
-        self.heroi_visivel = true
+        if not self.heroi_visivel then
+            self.direcao_olhando = 'esquerda'
+        end
+        self.heroi_visivel = true 
     end
 
     -- Atualiza os tempos de recarga se o boss viu o heroi
@@ -181,10 +184,8 @@ function Boss:draw()
             self.anim_boss:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         end
         
-        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
     end
     
     love.graphics.pop()  
-
-    love.graphics.print("Vida Boss: " .. self.vida, 10, 30)
 end
