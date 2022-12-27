@@ -12,7 +12,7 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.anim_boss_parado = anim.newAnimation(g_inimigos('1-1', tipo_boss.op), 0.15)
 
     --Status inimigo
-    self.posicao = Vector(2325, 375)
+    self.posicao = Vector(2325, 350)
     self.dano = tipo_boss.dano
     self.vida = 1000
     self.temp_vida = tipo_boss.vida
@@ -25,7 +25,7 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.direcao_olhando = 'esquerda'
     self.delay_ataque_tiro = 0 -- tempo entre os ataques de tiro
     self.delay_ataque_avanco = 0 -- tempo para ataque de avanço
-    self.tempo_ataque = 0 -- tempo alternar modos de ataques
+    self.tempo_ataque = 2.5 -- tempo alternar modos de ataques
     self.tiros = {}
     self.posicao_heroi = heroi:get_posicao_normalizada()
     self.delay_dano = 0 -- tempo de espera para dar dano no heroi
@@ -37,7 +37,9 @@ function Boss:update(dt)
     self.anim_boss_parado:update(dt)
 
     -- Verifica se o heroi está atirando e se o boss escutou o tiro
-    if heroi.atirando and verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao) then
+    local escutou_tomou_tiro = verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao)
+    local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
+    if (heroi.atirando and escutou_tomou_tiro) or viu_heroi then
         self.heroi_visivel = true
     end
 
@@ -56,24 +58,24 @@ function Boss:update(dt)
     end
 
     -- Verifica se já terminou o tempo de recarga do ataque de avanco
-    if self.delay_ataque_avanco >= 13 and self.delay_ataque_avanco <= 14 then
+    if self.delay_ataque_avanco >= 12 and self.delay_ataque_avanco <= 13 then
         self.estado_ataque = 'carregar avanco'
         self.posicao_heroi = heroi:get_posicao_normalizada()
-    elseif self.estado_ataque == 'carregar avanco' and self.delay_ataque_avanco > 15 then
+    elseif self.estado_ataque == 'carregar avanco' and self.delay_ataque_avanco > 14 then
         self.estado_ataque = 'avanco'
         self.tempo_ataque = 0
     end
 
     -- Alterna entre os estados de ataque tiro e normal caso avanço esteja em cd
-    if 4.0 <= self.tempo_ataque and self.tempo_ataque < 6.00 and self.delay_ataque_avanco < 12 then
+    if 3.0 <= self.tempo_ataque and self.tempo_ataque < 5.00 and self.delay_ataque_avanco < 10 then
         self.estado_ataque = 'tiro'
-    elseif self.tempo_ataque >= 6.00 and self.delay_ataque_avanco < 12 then
+    elseif self.tempo_ataque >= 5.00 and self.delay_ataque_avanco < 10 then
         self.estado_ataque = 'normal'
         self.tempo_ataque = 0
     end
 
     -- Verifica se está no modo de ataque tiro
-    if self.delay_ataque_tiro >= 0.40 and self.estado_ataque == 'tiro' then
+    if self.delay_ataque_tiro >= 0.45 and self.estado_ataque == 'tiro' then
         if self.posicao.x >= heroi:get_posicao_normalizada().x then
             table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', 16))
         else
@@ -155,9 +157,9 @@ function Boss:draw()
         love.graphics.setLineWidth(100)
 
         if self.direcao_olhando == 'esquerda' then -- Boss está olhando pra esquerda
-            love.graphics.line(1600, self.posicao_heroi.y/escala, self.posicao.x/escala + 40, self.posicao.y/escala)
+            love.graphics.line(self.posicao.x/escala + 40, self.posicao.y/escala, 1600/escala, self.posicao_heroi.y/escala)
         elseif self.direcao_olhando == 'direita' then -- Boss olhando para direita
-            love.graphics.line(self.posicao.x/escala - 40, self.posicao.y/escala, 2400, self.posicao_heroi.y/escala)
+            love.graphics.line(self.posicao.x/escala - 40, self.posicao.y/escala, 2400/escala, self.posicao_heroi.y/escala)
         end
         
         love.graphics.setLineWidth(1)
@@ -179,7 +181,7 @@ function Boss:draw()
             self.anim_boss:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         end
         
-        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
     end
     
     love.graphics.pop()  
