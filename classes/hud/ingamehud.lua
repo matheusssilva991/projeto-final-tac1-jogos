@@ -27,8 +27,10 @@ function InGameHud:draw()
     love.graphics.setColor(1, 1, 1)
     
     -- Barra de Vida
-    love.graphics.setColor(0, 1, 0)
+    love.graphics.setColor(0, 0, 0)
     love.graphics.rectangle("fill", 80, ALTURA_TELA-60, 200, 40, 5, 5)
+    love.graphics.setColor(0, 1, 0)
+    love.graphics.rectangle("fill", 80, ALTURA_TELA-60, 2*heroi.vida, 40, 5, 5)
     love.graphics.setColor(0.3, 0, 1)
     love.graphics.rectangle("line", 80, ALTURA_TELA-60, 200, 40, 5, 5)
     love.graphics.setColor(1, 1, 1)

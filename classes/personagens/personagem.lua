@@ -25,7 +25,7 @@ function Personagem:new(x, y)
     self.tempo_colisao = 0
     self.vetor_direcao = Vector(0, 0)
 
-    self.collider = world:newBSGRectangleCollider(self.posicao.x+30, self.posicao.y+10, self.largura-60, self.altura-80, 0)
+    self.collider = world:newBSGRectangleCollider(self.posicao.x+30, self.posicao.y+10, self.largura-60, self.altura-80, 10)
     self.collider:setFixedRotation(true)
 end
 
@@ -171,6 +171,7 @@ function Personagem:update(dt)
                 end  
 
                 if inimigos[j].vida <= 0 then
+                    inimigos[j].collider:destroy()
                     table.remove(inimigos, j)
                 end
 

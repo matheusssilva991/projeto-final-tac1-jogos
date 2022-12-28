@@ -40,8 +40,8 @@ end
 function Jogo:draw()
     fase:draw()
     love.graphics.setColor(0, 0, 0)
-    --love.graphics.print("tempo jogo: " .. math.floor(tempo_jogo), 10, 10)
-    love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
+    --love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
+    love.graphics.print("Posicao: (" .. tonumber(string.format("%.2f", heroi.posicao.x)) .. ', ' .. tonumber(string.format("%.2f", heroi.posicao.y)) .. ")", 10, 10)
     love.graphics.setColor(1, 1, 1)
 end
 

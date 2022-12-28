@@ -12,13 +12,13 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.anim_boss_parado = anim.newAnimation(g_inimigos('1-1', tipo_boss.op), 0.15)
 
     --Status inimigo
-    self.posicao = Vector(2325, 350)
+    self.posicao = tipo_boss.posicao
     self.dano = tipo_boss.dano
-    self.vida = 1000
+    self.dano_tiro = tipo_boss.dano_tiro
+    self.vida = tipo_boss.vida
     self.temp_vida = tipo_boss.vida
-    self.barra_vida = 56
-    self.raio = 70
-    self.raio_deteccao = 450
+    self.raio = tipo_boss.raio
+    self.raio_deteccao = tipo_boss.raio_deteccao
 
     self.estado_mov = 'descendo'
     self.estado_ataque = 'normal'
@@ -37,8 +37,8 @@ function Boss:update(dt)
     self.anim_boss_parado:update(dt)
 
     -- Verifica se o heroi está atirando e se o boss escutou o tiro
-    local escutou_tomou_tiro = verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao)
-    local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
+    local escutou_tomou_tiro = verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio_tiro, self.posicao, self.raio_deteccao)
+    local viu_heroi = verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, self.posicao, self.raio_deteccao)
     if (heroi.atirando and escutou_tomou_tiro) or viu_heroi then
         if not self.heroi_visivel then
             self.direcao_olhando = 'esquerda'
@@ -80,9 +80,9 @@ function Boss:update(dt)
     -- Verifica se está no modo de ataque tiro
     if self.delay_ataque_tiro >= 0.45 and self.estado_ataque == 'tiro' then
         if self.posicao.x >= heroi:get_posicao_normalizada().x then
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', 16))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', self.dano_tiro))
         else
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', 16))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', self.dano_tiro))
         end
         self.delay_ataque_tiro = 0
     end

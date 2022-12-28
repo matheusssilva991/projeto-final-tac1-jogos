@@ -16,7 +16,6 @@ function Caixa:new()
 
     self.collider = world:newBSGRectangleCollider(self.x+10, self.y+60, self.larg_frame-20, self.alt_frame-70, 0)
     self.collider:setType('static')
-
 end
 
 function Caixa:update(dt)
@@ -25,4 +24,5 @@ end
 
 function Caixa:draw()
     self.animation:draw(self.img, self.x, self.y)
+    --love.graphics.circle("line", self.x+50, self.y+50, 10)
 end

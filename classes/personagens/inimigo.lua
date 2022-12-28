@@ -34,6 +34,8 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
 
     self.delay_dano = 0
     self.colidindo = false
+    self.collider = world:newBSGRectangleCollider(self.posicao.x, self.posicao.y, self.largura-60, self.altura-80, 0)
+    self.collider:setFixedRotation(true)
 end
 
 function Inimigo:update(dt)
@@ -61,11 +63,13 @@ function Inimigo:update(dt)
     end
 
     -- Verificar se o personagem(heroi) entrou na visão do inimigo
-    local escutou_tiro = (heroi.atirando and verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao))
-    if self:checa_visao(self.objetivo) or escutou_tiro then
+    local viu_heroi = verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, self.posicao, self.raio_deteccao)
+    local escutou_tiro = (heroi.atirando and verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio_tiro, self.posicao, self.raio_deteccao))
+    if viu_heroi or escutou_tiro then
         self.heroi_visivel = true
     end
 
+    local vx, vy = 0, 0
     -- Coloca o zumbi para seguir se tem heroi visivel
     if self.heroi_visivel then
         self.vel_desejada = self.objetivo - self.posicao
@@ -75,8 +79,11 @@ function Inimigo:update(dt)
         self.velocidade = self.velocidade + self.direcao_des
         self.velocidade = self.velocidade:limit(self.vel_max)
 
-        self.posicao = self.posicao + self.velocidade * dt
+        vx = self.velocidade.x
+        vy = self.velocidade.y
     end
+
+    self.collider:setLinearVelocity(vx, vy)
 end
 
 function Inimigo:draw()
@@ -101,12 +108,4 @@ function Inimigo:draw()
     love.graphics.setColor(1, 1, 1)
     love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
     love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
-end
-
-function Inimigo:checa_visao(objeto)
-    if self.posicao.dist(objeto, self.posicao) <= self.raio_deteccao then
-        return true
-    else
-        return false
-    end 
 end
