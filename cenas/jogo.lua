@@ -6,10 +6,10 @@ function Jogo:new()
     require "cenas/fase3"
 
     id_jogador = 1
-    nivel_fase = 1
+    nivel_fase = 2
     trocou_fase = false
     tempo_jogo = 0
-    fase = Fase1()
+    fase = Fase2()
     tabela_ranking = {}
 end
 
@@ -24,6 +24,7 @@ function Jogo:update(dt)
                 trocou_fase = true
             else
                 table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
+                id_jogador = id_jogador + 1
             end
         end
 
@@ -40,10 +41,11 @@ function Jogo:update(dt)
 end
 
 function Jogo:draw()
+    local pos = heroi:get_posicao_normalizada()
     fase:draw()
     love.graphics.setColor(0, 0, 0)
     --love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
-    love.graphics.print("Posicao: (" .. tonumber(string.format("%.2f", heroi.posicao.x)) .. ', ' .. tonumber(string.format("%.2f", heroi.posicao.y)) .. ")", 10, 10)
+    love.graphics.print("Posicao: (" .. tonumber(string.format("%.2f", pos.x)) .. ', ' .. tonumber(string.format("%.2f", pos.y)) .. ")", 10, 10)
     love.graphics.setColor(1, 1, 1)
 end
 

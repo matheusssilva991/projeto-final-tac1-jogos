@@ -16,10 +16,10 @@ function Personagem:new(x, y)
     self.posicao = Vector(x, y)
     self.tiros = {}
     self.delay_tiro = 0
-    self.raio = 35
-    self.raio_tiro = 300
+    self.raio = 30
+    self.raio_tiro = 450
     self.vida = 100
-    self.vel = 300
+    self.vel = 230
 
     self.estado_anterior = nil
     self.tempo_colisao = 0
@@ -44,6 +44,12 @@ function Personagem:update(dt)
     if love.keyboard.isDown("a") and self.estado ~= 'colidindo' then
         vx = self.vel * -1
         self.estado = 'andando_esq'
+
+        if enfrentando_boss == true then
+            if self.posicao.x < 1600 then
+                vx = 0
+            end
+        end
     elseif love.keyboard.isDown("d") and self.estado ~= 'colidindo' then
         vx = self.vel
         self.estado = 'andando_dir'   
@@ -59,10 +65,10 @@ function Personagem:update(dt)
     end
 
     -- verifica se o personagem estava atirando
-    if self.atirando and self.delay_tiro > 0.60 then
+    if self.atirando and self.delay_tiro > 0.50 then
         self.atirando = false
         self.delay_tiro = 0
-    elseif self.atirando and self.delay_tiro <= 0.60 then
+    elseif self.atirando and self.delay_tiro <= 0.50 then
         self.delay_tiro = self.delay_tiro + dt
     end
 
@@ -120,9 +126,9 @@ function Personagem:update(dt)
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda', 2, 'heroi', 35)
+           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda', 2, 'heroi', 35, 1000)
         elseif self.estado == 'parado_dir' then
-            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita', 2, 'heroi', 35)
+            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita', 2, 'heroi', 35, 1000)
         end
         table.insert(self.tiros, tiro)
     end

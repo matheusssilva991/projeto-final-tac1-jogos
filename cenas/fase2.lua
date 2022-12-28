@@ -4,34 +4,42 @@ function Fase2:new()
     cam = camera()
     world = wf.newWorld(0, 0)
 
-    bg = Background()
+    bg = Background("mapa_fase_2")
     hud = InGameHud()
     start_menu = Start()
     
     caixa = Caixa()
     self.estado = 'nao finalizado'
+    enfrentando_boss = false
 
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
 
     -- Heroi - Personagem principal
-    heroi = Personagem(140, 220)
+    heroi = Personagem(13.84, 500)
 
     -- Zumbies normal
-    tipos_inimigos = {{vel = Vector(40, 40), dano=5, vida=100, op=1, vel_max=80, raio=100},
-                      {vel = Vector(30, 30), dano=5, vida=100, op=3, vel_max=60, raio=100},
-                      {vel = Vector(25, 25), dano=15, vida=100, op=4, vel_max=50, raio=100}}
+    tipos_inimigos = {{vel = Vector(40, 40), dano=8, vida=100, op=1, vel_max=100, raio=100},
+                      {vel = Vector(30, 30), dano=12, vida=100, op=3, vel_max=80, raio=100},
+                      {vel = Vector(25, 25), dano=17, vida=100, op=4, vel_max=60, raio=100}}
 
-    inimigos = {Inimigo("inimigos", tipos_inimigos[1], Vector(400, 210)),
-                Inimigo("inimigos", tipos_inimigos[2], Vector(70, 450)),
+    inimigos = {Inimigo("inimigos", tipos_inimigos[1], Vector(340, 157)),
+                Inimigo("inimigos", tipos_inimigos[2], Vector(530, 157)),
                 Inimigo("inimigos", tipos_inimigos[3], Vector(700, 400)),
-                Inimigo("inimigos", tipos_inimigos[3], Vector(1100, 167)),
-                Inimigo("inimigos", tipos_inimigos[2], Vector(1381, 446)),
-                Inimigo("inimigos", tipos_inimigos[1], Vector(1605, 157))}
-                --Inimigo("inimigos", tipos_inimigos[4], Vector(420, 286))}
+                Inimigo("inimigos", tipos_inimigos[2], Vector(345, 422)),
+                Inimigo("inimigos", tipos_inimigos[3], Vector(460, 300)),
+                Inimigo("inimigos", tipos_inimigos[1], Vector(676, 300)),
+                Inimigo("inimigos", tipos_inimigos[2], Vector(806, 241)),
+                Inimigo("inimigos", tipos_inimigos[2], Vector(910, 356)),
+                Inimigo("inimigos", tipos_inimigos[1], Vector(1168, 425)),
+                Inimigo("inimigos", tipos_inimigos[1], Vector(1194, 352)),
+                Inimigo("inimigos", tipos_inimigos[3], Vector(1500, 300)),
+                Inimigo("inimigos", tipos_inimigos[3], Vector(1412, 207)),
+                Inimigo("inimigos", tipos_inimigos[2], Vector(1534, 472)),
+                Inimigo("inimigos", tipos_inimigos[1], Vector(1859, 207))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=10, vida=100, raio=70, raio_deteccao=450, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=30, dano_tiro=20, vida=1200, raio=70, raio_deteccao=200, vel=1000, vel_tiro=550, op=2}
     boss = Boss("inimigos", tipo_boss)
 
     --DEFINE LIMITES DO MAPA
@@ -43,17 +51,6 @@ function Fase2:new()
     paredeDir:setType('static')
     paredeCima:setType('static')
     paredeBaixo:setType('static')
-
-    --DEFINE COLISAO COM DECORACOES DO MAPA
-    local planta1 = world:newRectangleCollider(55, 160, 35, 90)
-    local planta2 = world:newRectangleCollider(281, 160, 35, 90)
-    planta1:setType('static')
-    planta2:setType('static')
-
-    local colunasBanco1 = world:newRectangleCollider(1650, 160, 140, 80)
-    local colunasBanco2 = world:newRectangleCollider(1900, 160, 140, 80)
-    colunasBanco1:setType('static')
-    colunasBanco2:setType('static')
 end
 
 function Fase2:update(dt)
@@ -82,7 +79,9 @@ function Fase2:update(dt)
     end
 
     -- Camera
-    cam:lookAt(heroi.posicao.x+200, bg.y+(bg.alt/2))
+    if enfrentando_boss ~= true then
+        cam:lookAt(heroi.posicao.x+200, bg.y+(bg.alt/2))
+    end
 
     if cam.x < LARGURA_TELA/2 then
         cam.x = LARGURA_TELA/2
@@ -90,6 +89,12 @@ function Fase2:update(dt)
 
     if cam.x > (bg.larg - LARGURA_TELA/2) then
         cam.x = (bg.larg - LARGURA_TELA/2)
+    end
+
+    if heroi.posicao.x >= 1600 then
+        enfrentando_boss = true
+        cam:lockX(2000, camera.smooth.linear(350))
+        --cam:zoomTo(2)
     end
 end
 

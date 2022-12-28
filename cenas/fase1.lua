@@ -4,12 +4,13 @@ function Fase1:new()
     cam = camera()
     world = wf.newWorld(0, 0)
 
-    bg = Background()
+    bg = Background("mapa_fase_1")
     hud = InGameHud()
     start_menu = Start()
     
     caixa = Caixa()
     self.estado = 'nao finalizado'
+    enfrentando_boss = false
 
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
@@ -19,9 +20,9 @@ function Fase1:new()
     heroi = Personagem(140, 220)
 
     -- Zumbies normal
-    tipos_inimigos = {{vel = Vector(40, 40), dano=5, vida=100, op=1, vel_max=80, raio=100},
-                      {vel = Vector(30, 30), dano=5, vida=100, op=3, vel_max=60, raio=100},
-                      {vel = Vector(25, 25), dano=15, vida=100, op=4, vel_max=50, raio=100}}
+    tipos_inimigos = {{vel = Vector(50, 50), dano=5, vida=100, op=1, vel_max=120, raio=100},
+                      {vel = Vector(40, 40), dano=10, vida=100, op=3, vel_max=100, raio=100},
+                      {vel = Vector(35, 35), dano=15, vida=100, op=4, vel_max=60, raio=100}}
 
     inimigos = {Inimigo("inimigos", tipos_inimigos[1], Vector(400, 210)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(70, 450)),
@@ -29,10 +30,9 @@ function Fase1:new()
                 Inimigo("inimigos", tipos_inimigos[3], Vector(1100, 167)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(1381, 446)),
                 Inimigo("inimigos", tipos_inimigos[1], Vector(1605, 157))}
-                --Inimigo("inimigos", tipos_inimigos[4], Vector(420, 286))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=10, vida=100, raio=70, raio_deteccao=450, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=16, vida=1000, raio=70, raio_deteccao=450, vel=700, vel_tiro=400, op=2}
     boss = Boss("inimigos", tipo_boss)
 
     --DEFINE LIMITES DO MAPA
@@ -83,7 +83,9 @@ function Fase1:update(dt)
     end
 
     -- Camera
-    cam:lookAt(heroi.posicao.x+200, bg.y+(bg.alt/2))
+    if enfrentando_boss ~= true then
+        cam:lookAt(heroi.posicao.x+200, bg.y+(bg.alt/2))
+    end
 
     if cam.x < LARGURA_TELA/2 then
         cam.x = LARGURA_TELA/2
@@ -91,6 +93,12 @@ function Fase1:update(dt)
 
     if cam.x > (bg.larg - LARGURA_TELA/2) then
         cam.x = (bg.larg - LARGURA_TELA/2)
+    end
+
+    if heroi.posicao.x >= 1600 then
+        enfrentando_boss = true
+        cam:lockX(2000, camera.smooth.linear(350))
+        --cam:zoomTo(2)
     end
 end
 

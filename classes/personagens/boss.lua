@@ -16,16 +16,17 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.dano = tipo_boss.dano
     self.dano_tiro = tipo_boss.dano_tiro
     self.vida = tipo_boss.vida
-    self.temp_vida = tipo_boss.vida
     self.raio = tipo_boss.raio
     self.raio_deteccao = tipo_boss.raio_deteccao
+    self.vel = tipo_boss.vel
+    self.vel_tiro = tipo_boss.vel_tiro
 
     self.estado_mov = 'descendo'
     self.estado_ataque = 'normal'
     self.direcao_olhando = 'direita'
     self.delay_ataque_tiro = 0 -- tempo entre os ataques de tiro
     self.delay_ataque_avanco = 0 -- tempo para ataque de avanço
-    self.tempo_ataque = 2.5 -- tempo alternar modos de ataques
+    self.tempo_ataque = 2.25 -- tempo alternar modos de ataques
     self.tiros = {}
     self.posicao_heroi = heroi:get_posicao_normalizada()
     self.delay_dano = 0 -- tempo de espera para dar dano no heroi
@@ -80,9 +81,9 @@ function Boss:update(dt)
     -- Verifica se está no modo de ataque tiro
     if self.delay_ataque_tiro >= 0.45 and self.estado_ataque == 'tiro' then
         if self.posicao.x >= heroi:get_posicao_normalizada().x then
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', self.dano_tiro))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', self.dano_tiro, self.vel_tiro))
         else
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', self.dano_tiro))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', self.dano_tiro, self.vel_tiro))
         end
         self.delay_ataque_tiro = 0
     end
@@ -119,15 +120,15 @@ function Boss:update(dt)
         self.posicao = self.posicao - Vector(0, 0.80)
     elseif self.estado_mov == 'descendo' and self.estado_ataque == 'avanco' then
         if self.direcao_olhando == 'direita' then
-            self.posicao = self.posicao + Vector(700, math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
+            self.posicao = self.posicao + Vector(self.vel, math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
         elseif self.direcao_olhando == 'esquerda' then
-            self.posicao = self.posicao - Vector(700, -math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
+            self.posicao = self.posicao - Vector(self.vel, -math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
         end
     elseif self.estado_mov == 'subindo' and self.estado_ataque == 'avanco' then
         if self.direcao_olhando == 'direita' then
-            self.posicao = self.posicao + Vector(700, -math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
+            self.posicao = self.posicao + Vector(self.vel, -math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
         elseif self.direcao_olhando == 'esquerda' then
-            self.posicao = self.posicao - Vector(700, math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
+            self.posicao = self.posicao - Vector(self.vel, math.abs(self.posicao_heroi.y - self.posicao.y)) * dt
         end
     end
 

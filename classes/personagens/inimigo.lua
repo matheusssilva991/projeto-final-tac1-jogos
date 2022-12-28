@@ -21,12 +21,12 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     self.vida = tipos_inimigos.vida
     self.temp_vida = tipos_inimigos.vida
     self.barra_vida = 56
-    self.raio = 50
+    self.raio = 40
 
     self.objetivo = Vector(0, 0)
     self.vel_desejada = Vector(0, 0)
     self.aceleracao = Vector(1, 1)
-    self.direcao_max = 5
+    self.direcao_max = 10
     self.direcao_des = Vector(0,0)
     self.massa = 5
 

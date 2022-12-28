@@ -4,7 +4,7 @@ function Fase3:new()
     cam = camera()
     world = wf.newWorld(0, 0)
 
-    bg = Background()
+    bg = Background("mapa_fase_2")
     hud = InGameHud()
     start_menu = Start()
     
@@ -29,7 +29,6 @@ function Fase3:new()
                 Inimigo("inimigos", tipos_inimigos[3], Vector(1100, 167)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(1381, 446)),
                 Inimigo("inimigos", tipos_inimigos[1], Vector(1605, 157))}
-                --Inimigo("inimigos", tipos_inimigos[4], Vector(420, 286))}
 
     -- Boss
     tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=10, vida=100, raio=70, raio_deteccao=450, op=2}
