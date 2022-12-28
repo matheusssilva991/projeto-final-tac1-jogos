@@ -8,7 +8,6 @@ function Fase1:new()
     hud = InGameHud()
     start_menu = Start()
     
-    heroi = Personagem()
     caixa = Caixa()
     self.estado = 'nao finalizado'
 
@@ -33,7 +32,7 @@ function Fase1:new()
                 --Inimigo("inimigos", tipos_inimigos[4], Vector(420, 286))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=10, vida=1000, raio=70, raio_deteccao=450, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=10, vida=100, raio=70, raio_deteccao=450, op=2}
     boss = Boss("inimigos", tipo_boss)
 
     --DEFINE LIMITES DO MAPA
@@ -59,19 +58,22 @@ function Fase1:new()
 end
 
 function Fase1:update(dt)
-    if love.keyboard.isDown("x") then
+    heroi:update(dt)
+    --caixa:update(dt)
+
+    if boss ~= nil then
+        boss:update(dt)
+    else
         self.estado = 'finalizado'
     end
 
-    heroi:update(dt)
-    --caixa:update(dt)
-    boss:update(dt)
     for i=1, #inimigos do
         inimigos[i]:update(dt)
     end
 
     world:update(dt)
 
+    -- Atualiza posicão dos personagens
     heroi.posicao.x = heroi.collider:getX() - heroi.largura/2
     heroi.posicao.y = heroi.collider:getY() - heroi.altura/1.2
 
@@ -96,8 +98,9 @@ function Fase1:draw()
     cam:attach()
     bg:draw()
 
-    boss:draw()
-
+    if boss ~= nil then
+        boss:draw()
+    end
     -- Desenha os inimigos que estão atrás da caixa
     for i=1, #inimigos do
         if inimigos[i].posicao.y <= caixa.y+50 then

@@ -14,26 +14,28 @@ function Jogo:new()
 end
 
 function Jogo:update(dt)
-    fase:update(dt)
-    tempo_jogo = tempo_jogo + dt
+    if heroi.vida > 0 then
+        fase:update(dt)
+        tempo_jogo = tempo_jogo + dt
 
-    if fase.estado == 'finalizado' then
-        if nivel_fase < 3 then
-            nivel_fase = nivel_fase + 1
-            trocou_fase = true
-        else
-            table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
+        if fase.estado == 'finalizado' then
+            if nivel_fase < 3 then
+                nivel_fase = nivel_fase + 1
+                trocou_fase = true
+            else
+                table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
+            end
         end
-    end
 
-    if nivel_fase == 2 and trocou_fase then
-        trocou_fase = false
-        fase = Fase2()  
-    elseif nivel_fase == 3 and trocou_fase then
-        trocou_fase = false
-        fase = Fase3()
-    else
-        fase.estado = 'nao finalizado'
+        if nivel_fase == 2 and trocou_fase then
+            trocou_fase = false
+            fase = Fase2()  
+        elseif nivel_fase == 3 and trocou_fase then
+            trocou_fase = false
+            fase = Fase3()
+        else
+            fase.estado = 'nao finalizado'
+        end
     end
 end
 

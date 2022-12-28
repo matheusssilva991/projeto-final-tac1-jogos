@@ -101,7 +101,7 @@ function Personagem:update(dt)
     end
 
     -- Verifica se colidiu com o boss
-    if verifica_colisao(self:get_posicao_normalizada(), self.raio, boss.posicao, boss.raio) and self.estado ~= 'colidindo' then
+    if boss ~= nil and verifica_colisao(self:get_posicao_normalizada(), self.raio, boss.posicao, boss.raio) and self.estado ~= 'colidindo' then
         self.estado_anterior = self.estado
         self.estado = 'colidindo'
         self.vetor_direcao = self:get_posicao_normalizada() - boss.posicao
@@ -136,7 +136,7 @@ function Personagem:update(dt)
         local colisao_boss = false
         local colisao_zumbi = false
 
-        if verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, boss.posicao, boss.raio) then
+        if boss ~= nil and verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, boss.posicao, boss.raio) then
             colisao_boss = true
         end
 
@@ -144,7 +144,7 @@ function Personagem:update(dt)
         while j <= #inimigos and cond_loop do
             if verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, inimigos[j].posicao, inimigos[j].raio) then
                 if self.tiros[i].direcao == 'direita' and colisao_boss then --Verifica quem o tiro acertou primeiro direita
-                    if boss.posicao.x < inimigos[i].posicao.x then
+                    if boss ~= nil and boss.posicao.x < inimigos[i].posicao.x then
                         boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
                         boss.heroi_visivel = true
                     else
@@ -154,7 +154,7 @@ function Personagem:update(dt)
                         inimigos[j].heroi_visivel = true    
                     end
                 elseif self.tiros[i].direcao == 'esquerda' and colisao_boss then --Verifica quem o tiro acertou primeiro esq
-                    if boss.posicao.x > inimigos[i].posicao.x then
+                    if boss ~= nil and boss.posicao.x > inimigos[i].posicao.x then
                         boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
                         boss.heroi_visivel = true
                     else
@@ -175,16 +175,24 @@ function Personagem:update(dt)
                     table.remove(inimigos, j)
                 end
 
+                if boss ~= nil and boss.vida <= 0 then
+                    boss = nil
+                end
+
                 cond_loop = false
                 table.remove(self.tiros, i)   
             end
             j=j+1
         end
-
+        
         if colisao_boss and not colisao_zumbi then
             boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
             table.remove(self.tiros, i)  
             boss.heroi_visivel = true
+
+            if boss ~= nil and boss.vida <= 0 then
+                boss = nil
+            end
         elseif not colisao_boss and not colisao_zumbi and self.tiros[i].distancia_tiro >= 800 then
             table.remove(self.tiros, i)
         end

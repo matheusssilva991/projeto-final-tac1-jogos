@@ -23,6 +23,7 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     self.barra_vida = 56
     self.raio = 50
 
+    self.objetivo = Vector(0, 0)
     self.vel_desejada = Vector(0, 0)
     self.aceleracao = Vector(1, 1)
     self.direcao_max = 5
@@ -52,8 +53,7 @@ function Inimigo:update(dt)
         self.delay_dano = self.delay_dano + dt
     end
     
-    self.objetivo = heroi.posicao
-    self.objetivo = self.objetivo + Vector(heroi.largura/2, heroi.altura/2)
+    self.objetivo = heroi.posicao + Vector(heroi.largura/2, heroi.altura/2)
 
     -- Definir qual lado o inimigo está olhando
     if self.heroi_visivel and self.objetivo.x >= self.posicao.x then
