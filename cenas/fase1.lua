@@ -14,7 +14,6 @@ function Fase1:new()
 
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
-    --love.graphics.setBackgroundColor(0, 1, 0)
 
     -- Heroi - Personagem principal
     heroi = Personagem(140, 220)
@@ -27,12 +26,15 @@ function Fase1:new()
     inimigos = {Inimigo("inimigos", tipos_inimigos[1], Vector(400, 210)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(70, 450)),
                 Inimigo("inimigos", tipos_inimigos[3], Vector(700, 400)),
+                Inimigo("inimigos", tipos_inimigos[2], Vector(925, 226)),
                 Inimigo("inimigos", tipos_inimigos[3], Vector(1100, 167)),
+                Inimigo("inimigos", tipos_inimigos[2], Vector(1134, 452)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(1381, 446)),
+                Inimigo("inimigos", tipos_inimigos[1], Vector(1388, 204)),
                 Inimigo("inimigos", tipos_inimigos[1], Vector(1605, 157))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=16, vida=1000, raio=70, raio_deteccao=450, vel=700, vel_tiro=400, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=16, vida=1000, raio=70, raio_deteccao=450, vel=700, vel_tiro=350, op=2}
     boss = Boss("inimigos", tipo_boss)
 
     --DEFINE LIMITES DO MAPA
@@ -132,10 +134,6 @@ function Fase1:draw()
     end
 
     --world:draw()
-    
     cam:detach()
     hud:draw()
-    --love.graphics.print("Vida heroi: " .. heroi.vida, 10, 40)
-    --love.graphics.print("Vida Boss: " .. boss.vida, 10, 80)
-    --love.graphics.print("Vida: " .. heroi.vida, 10, 10)
 end

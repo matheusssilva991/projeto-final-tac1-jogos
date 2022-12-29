@@ -44,7 +44,7 @@ function InGameHud:draw()
     love.graphics.draw(self.img_vida, (80-self.coracaoLarg)/2, ALTURA_TELA-60)
 
     -- Barra de Vida Boss
-    if enfrentando_boss == true then
+    if enfrentando_boss == true and boss ~= nil then
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("fill", 550, ALTURA_TELA-60, 200, 40, 5, 5)
         love.graphics.setColor(1, 0, 0)

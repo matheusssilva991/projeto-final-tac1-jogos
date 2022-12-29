@@ -26,7 +26,6 @@ function Fase2:new()
     inimigos = {Inimigo("inimigos", tipos_inimigos[1], Vector(340, 157)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(530, 157)),
                 Inimigo("inimigos", tipos_inimigos[3], Vector(700, 400)),
-                Inimigo("inimigos", tipos_inimigos[2], Vector(345, 422)),
                 Inimigo("inimigos", tipos_inimigos[3], Vector(460, 300)),
                 Inimigo("inimigos", tipos_inimigos[1], Vector(676, 300)),
                 Inimigo("inimigos", tipos_inimigos[2], Vector(806, 241)),
@@ -39,7 +38,7 @@ function Fase2:new()
                 Inimigo("inimigos", tipos_inimigos[1], Vector(1859, 207))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=30, dano_tiro=20, vida=1200, raio=70, raio_deteccao=200, vel=1000, vel_tiro=550, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=30, dano_tiro=20, vida=1200, raio=70, raio_deteccao=200, vel=1000, vel_tiro=400, op=2}
     boss = Boss("inimigos", tipo_boss)
 
     --DEFINE LIMITES DO MAPA
@@ -131,7 +130,4 @@ function Fase2:draw()
     
     cam:detach()
     hud:draw()
-    --love.graphics.print("Vida heroi: " .. heroi.vida, 10, 40)
-    --love.graphics.print("Vida Boss: " .. boss.vida, 10, 80)
-    --love.graphics.print("Vida: " .. heroi.vida, 10, 10)
 end

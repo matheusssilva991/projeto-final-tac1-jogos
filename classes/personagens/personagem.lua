@@ -233,7 +233,7 @@ function Personagem:draw()
         self.tiros[i]:draw()
     end
 
-    love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio)
+    --love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio)
     --love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio_tiro)
 end
 

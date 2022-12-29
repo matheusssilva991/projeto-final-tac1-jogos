@@ -87,12 +87,6 @@ function Inimigo:update(dt)
 end
 
 function Inimigo:draw()
-    love.graphics.setColor(1, 0, 0)
-    love.graphics.circle("line", self.objetivo.x, self.objetivo.y, 5)
-    love.graphics.setColor(0, 1, 0)
-    love.graphics.circle("fill", self.posicao.x, self.posicao.y, 5)
-    love.graphics.setColor(1, 1, 1)
-
     if self.estado == 'parado' then
         self.anim_inimigos_parado:draw(self.img, self.posicao.x - self.largura/2, self.posicao.y - self.altura/2, 0, 1, 1)
     elseif self.estado == "olhando_esq" then
@@ -106,6 +100,6 @@ function Inimigo:draw()
     love.graphics.setColor(1, 0, 0)
     love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y - self.altura/2, self.barra_vida, 6)
     love.graphics.setColor(1, 1, 1)
-    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
-    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
+    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
+    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
 end
