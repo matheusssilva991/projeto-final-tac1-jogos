@@ -7,16 +7,18 @@ function Fase2:new()
     bg = Background("mapa_fase_2")
     hud = InGameHud()
     start_menu = Start()
-    
-    caixa = Caixa()
-    self.estado = 'nao finalizado'
-    enfrentando_boss = false
 
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
+    
+    -- Status Fase
+    self.estado = 'nao finalizado'
+    self.delay_mudar_fase = 0
+    self.alpha = 0
 
     -- Heroi - Personagem principal
     heroi = Personagem(13.84, 500)
+    enfrentando_boss = false
 
     -- Zumbies normal
     tipos_inimigos = {{vel = Vector(40, 40), dano=8, vida=100, op=1, vel_max=100, raio=100},
@@ -41,6 +43,11 @@ function Fase2:new()
     tipo_boss = {posicao=Vector(2325, 350), dano=30, dano_tiro=20, vida=1200, raio=70, raio_deteccao=200, vel=1000, vel_tiro=400, op=2}
     boss = Boss("inimigos", tipo_boss)
 
+    -- Caixas
+    caixas = {Caixa(Vector(220, 330)),
+              Caixa(Vector(275, 330)),
+              Caixa(Vector(420, 330))}
+
     --DEFINE LIMITES DO MAPA
     local paredeEsq = world:newRectangleCollider(-10, 0, 10, 600)
     local paredeDir = world:newRectangleCollider(2400, 0, 10, 600)
@@ -58,6 +65,9 @@ function Fase2:update(dt)
 
     if boss ~= nil then
         boss:update(dt)
+    elseif boss == nil and self.delay_mudar_fase < 1 then
+        self.delay_mudar_fase = self.delay_mudar_fase + dt
+        self.alpha = self.alpha + dt
     else
         self.estado = 'finalizado'
     end
@@ -103,31 +113,32 @@ function Fase2:draw()
 
     if boss ~= nil then
         boss:draw()
-    end
-    -- Desenha os inimigos que estão atrás da caixa
-    for i=1, #inimigos do
-        if inimigos[i].posicao.y <= caixa.y+50 then
-            inimigos[i]:draw()
-        end
+    elseif boss == nil and self.delay_mudar_fase < 1 then
+        love.graphics.setColor(0, 0, 0, self.alpha)
+        love.graphics.rectangle("fill", 0, 0, 2400, 600)
+        love.graphics.setColor(1, 1, 1)
     end
 
-    if heroi.posicao.y > caixa.y then
-        caixa:draw()
-        heroi:draw()
-    else
-        heroi:draw()
-        caixa:draw()
+    -- Todos os objetos e personagens do mapa
+    local objetos_personagens_mapa = {}
+
+    for i=#inimigos, 1, -1 do
+        table.insert(objetos_personagens_mapa, inimigos[i])
     end
-    
-    -- Desenha os inimigos que estão na frente da caixa
-    for i=1, #inimigos do
-        if inimigos[i].posicao.y > caixa.y+50 then
-            inimigos[i]:draw()
-        end
+
+    for i=#caixas, 1, -1 do
+        table.insert(objetos_personagens_mapa, caixas[i])
+    end
+
+    table.insert(objetos_personagens_mapa, heroi)
+
+    bubblesort(objetos_personagens_mapa)
+
+    for i=1, #objetos_personagens_mapa do
+        objetos_personagens_mapa[i]:draw()
     end
 
     --world:draw()
-    
     cam:detach()
     hud:draw()
 end

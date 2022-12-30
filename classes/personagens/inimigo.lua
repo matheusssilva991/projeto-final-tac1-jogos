@@ -2,6 +2,7 @@ Inimigo = Classe:extend()
 
 function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     --Imagem
+    self.nome = 'zumbi'
     self.img = love.graphics.newImage("/materials/chars/" .. nome_inimigo .. ".png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
@@ -21,7 +22,7 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     self.vida = tipos_inimigos.vida
     self.temp_vida = tipos_inimigos.vida
     self.barra_vida = 56
-    self.raio = 40
+    self.raio = 30
 
     self.objetivo = Vector(0, 0)
     self.vel_desejada = Vector(0, 0)
@@ -101,5 +102,5 @@ function Inimigo:draw()
     love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y - self.altura/2, self.barra_vida, 6)
     love.graphics.setColor(1, 1, 1)
     --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
-    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
 end

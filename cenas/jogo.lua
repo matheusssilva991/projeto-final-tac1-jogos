@@ -6,10 +6,10 @@ function Jogo:new()
     require "cenas/fase3"
 
     id_jogador = 1
-    nivel_fase = 3
+    nivel_fase = 1
     trocou_fase = false
     tempo_jogo = 0
-    fase = Fase3()
+    fase = Fase1()
     tabela_ranking = {}
 end
 
@@ -41,7 +41,6 @@ function Jogo:update(dt)
 end
 
 function Jogo:draw()
-    local pos = heroi:get_posicao_normalizada()
     fase:draw()
     love.graphics.setColor(0, 0, 0)
     love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
@@ -53,4 +52,46 @@ function verifica_colisao(A, raio_1, B, raio_2)
         return true
     end
     return false
+end
+
+function swap(a, b, table)
+    if table[a] == nil or table[b] == nil then
+        return false
+    end
+
+    if table[a].nome == 'zumbi' and table[b].nome == 'caixa' then
+        if table[a].posicao.y >= table[b].posicao.y+50 then
+            table[a], table[b] = table[b], table[a]
+            return true
+        end
+    elseif table[a].nome == 'caixa' and table[b].nome == 'zumbi' then
+        if table[a].posicao.y+50 > table[b].posicao.y then
+            table[a], table[b] = table[b], table[a]
+            return true
+        end
+    elseif table[a].nome == 'heroi' and table[b].nome == 'caixa' then
+        if table[a]:get_posicao_normalizada().y >= table[b].posicao.y+50 then
+            table[a], table[b] = table[b], table[a]
+            return true
+        end   
+    else 
+        if table[a].posicao.y > table[b].posicao.y then
+            table[a], table[b] = table[b], table[a]
+            return true
+        end
+    end
+
+    return false
+end
+
+function bubblesort(array)
+    for i=1,table.maxn(array) do
+
+        local ci = i
+        ::redo::
+        if swap(ci, ci+1, array) then
+            ci = ci - 1
+            goto redo
+        end
+    end
 end

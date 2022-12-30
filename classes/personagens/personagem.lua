@@ -1,6 +1,7 @@
 Personagem = Classe:extend()
 
 function Personagem:new(x, y)
+    self.nome = 'heroi'
     self.img = love.graphics.newImage("materials/chars/personagem.png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
@@ -9,14 +10,15 @@ function Personagem:new(x, y)
     local grid = anim.newGrid(self.largura, self.altura, self.largura_animacao, self.altura_animacao)
     self.animation_andando = anim.newAnimation(grid('1-8', 3, '1-6', 4), 0.1)
     self.animation_parado = anim.newAnimation(grid('7-7', 4), 0.1)
-    self.animation_atirando = anim.newAnimation(grid('1-8', 2), 0.1)
+    --self.animation_atirando = anim.newAnimation(grid('1-8', 2), 0.1)
+    self.animation_atirando = anim.newAnimation(grid('1-5', 2), 0.1)
 
     self.estado = 'parado_dir'
     self.atirando = false
     self.posicao = Vector(x, y)
     self.tiros = {}
     self.delay_tiro = 0
-    self.raio = 30
+    self.raio = 20
     self.raio_tiro = 450
     self.vida = 100
     self.vel = 230
@@ -65,10 +67,10 @@ function Personagem:update(dt)
     end
 
     -- verifica se o personagem estava atirando
-    if self.atirando and self.delay_tiro > 0.50 then
+    if self.atirando and self.delay_tiro > 0.45 then
         self.atirando = false
         self.delay_tiro = 0
-    elseif self.atirando and self.delay_tiro <= 0.50 then
+    elseif self.atirando and self.delay_tiro <= 0.45 then
         self.delay_tiro = self.delay_tiro + dt
     end
 
@@ -233,8 +235,7 @@ function Personagem:draw()
         self.tiros[i]:draw()
     end
 
-    --love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio)
-    --love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio_tiro)
+    love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio)
 end
 
 function Personagem:verifica_estado_andando()
