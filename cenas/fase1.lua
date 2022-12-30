@@ -36,7 +36,7 @@ function Fase1:new()
                 Inimigo("inimigos", tipos_inimigos[1], Vector(1605, 157))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=16, vida=1000, raio=70, raio_deteccao=450, vel=700, vel_tiro=350, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=16, dano_tiro=16, vida=1000, raio=70, raio_deteccao=450, vel=700, vel_tiro=350, op=2}
     boss = Boss("inimigos", tipo_boss)
 
     -- Caixas
@@ -68,7 +68,10 @@ end
 
 function Fase1:update(dt)
     heroi:update(dt)
-    --caixa:update(dt)
+
+    for i=#caixas, 1, -1 do
+        caixas[i]:update(dt)
+    end
 
     if boss ~= nil then
         boss:update(dt)
@@ -86,8 +89,9 @@ function Fase1:update(dt)
     world:update(dt)
 
     -- Atualiza posicão dos personagens
-    heroi.posicao.x = heroi.collider:getX() - heroi.largura/2
-    heroi.posicao.y = heroi.collider:getY() - heroi.altura/1.2
+    heroi.pos_real.x = heroi.collider:getX() - heroi.largura/2
+    heroi.pos_real.y = heroi.collider:getY() - heroi.altura/1.2
+    heroi.posicao = heroi.pos_real + Vector(heroi.largura/2, heroi.altura/2)
 
     for i=#inimigos, 1, -1 do
         inimigos[i].posicao.x = inimigos[i].collider:getX() - inimigos[i].largura/20
@@ -120,10 +124,6 @@ function Fase1:draw()
 
     if boss ~= nil then
         boss:draw()
-    elseif boss == nil and self.delay_mudar_fase < 1 then
-        love.graphics.setColor(0, 0, 0, self.alpha)
-        love.graphics.rectangle("fill", 0, 0, 2400, 600)
-        love.graphics.setColor(1, 1, 1)
     end
 
     -- Todos os objetos e personagens do mapa
@@ -139,7 +139,7 @@ function Fase1:draw()
 
     table.insert(objetos_personagens_mapa, heroi)
 
-    bubblesort(objetos_personagens_mapa)
+    bubblesort_y(objetos_personagens_mapa)
 
     for i=1, #objetos_personagens_mapa do
         objetos_personagens_mapa[i]:draw()
@@ -149,5 +149,9 @@ function Fase1:draw()
     cam:detach()
     hud:draw()
 
-
+    if boss == nil and self.delay_mudar_fase < 1 then
+        love.graphics.setColor(0, 0, 0, self.alpha)
+        love.graphics.rectangle("fill", 0, 0, 2400, 600)
+        love.graphics.setColor(1, 1, 1)
+    end
 end

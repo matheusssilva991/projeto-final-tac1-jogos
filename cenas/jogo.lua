@@ -22,7 +22,7 @@ function Jogo:update(dt)
             if nivel_fase < 3 then
                 nivel_fase = nivel_fase + 1
                 trocou_fase = true
-            else
+            elseif nivel_fase >= 3 then
                 table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
                 id_jogador = id_jogador + 1
             end
@@ -43,7 +43,7 @@ end
 function Jogo:draw()
     fase:draw()
     love.graphics.setColor(0, 0, 0)
-    love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
+    --love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
     love.graphics.setColor(1, 1, 1)
 end
 
@@ -54,23 +54,23 @@ function verifica_colisao(A, raio_1, B, raio_2)
     return false
 end
 
-function swap(a, b, table)
+function swap_y(a, b, table)
     if table[a] == nil or table[b] == nil then
         return false
     end
 
     if table[a].nome == 'zumbi' and table[b].nome == 'caixa' then
-        if table[a].posicao.y >= table[b].posicao.y+50 then
+        if table[a].posicao.y >= table[b].posicao.y then
             table[a], table[b] = table[b], table[a]
             return true
         end
     elseif table[a].nome == 'caixa' and table[b].nome == 'zumbi' then
-        if table[a].posicao.y+50 > table[b].posicao.y then
+        if table[a].posicao.y > table[b].posicao.y then
             table[a], table[b] = table[b], table[a]
             return true
         end
     elseif table[a].nome == 'heroi' and table[b].nome == 'caixa' then
-        if table[a]:get_posicao_normalizada().y >= table[b].posicao.y+50 then
+        if table[a].posicao.y >= table[b].posicao.y then
             table[a], table[b] = table[b], table[a]
             return true
         end   
@@ -84,12 +84,37 @@ function swap(a, b, table)
     return false
 end
 
-function bubblesort(array)
+function bubblesort_y(array)
     for i=1,table.maxn(array) do
 
         local ci = i
         ::redo::
-        if swap(ci, ci+1, array) then
+        if swap_y(ci, ci+1, array) then
+            ci = ci - 1
+            goto redo
+        end
+    end
+end
+
+function swap_x(a, b, table)
+    if table[a] == nil or table[b] == nil then
+        return false
+    end
+ 
+    if table[a].posicao.x > table[b].posicao.x then
+        table[a], table[b] = table[b], table[a]
+        return true
+    end
+
+    return false
+end
+
+function bubblesort_x(array)
+    for i=1,table.maxn(array) do
+
+        local ci = i
+        ::redo::
+        if swap_x(ci, ci+1, array) then
             ci = ci - 1
             goto redo
         end

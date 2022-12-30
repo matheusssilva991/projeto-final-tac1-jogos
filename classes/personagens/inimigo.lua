@@ -22,7 +22,7 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     self.vida = tipos_inimigos.vida
     self.temp_vida = tipos_inimigos.vida
     self.barra_vida = 56
-    self.raio = 30
+    self.raio = 35
 
     self.objetivo = Vector(0, 0)
     self.vel_desejada = Vector(0, 0)
@@ -54,7 +54,7 @@ function Inimigo:update(dt)
         self.delay_dano = self.delay_dano + dt
     end
     
-    self.objetivo = heroi.posicao + Vector(heroi.largura/2, heroi.altura/2)
+    self.objetivo = heroi.posicao
 
     -- Definir qual lado o inimigo está olhando
     if self.heroi_visivel and self.objetivo.x >= self.posicao.x then
@@ -64,8 +64,8 @@ function Inimigo:update(dt)
     end
 
     -- Verificar se o personagem(heroi) entrou na visão do inimigo
-    local viu_heroi = verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, self.posicao, self.raio_deteccao)
-    local escutou_tiro = (heroi.atirando and verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio_tiro, self.posicao, self.raio_deteccao))
+    local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
+    local escutou_tiro = (heroi.atirando and verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao))
     if viu_heroi or escutou_tiro then
         self.heroi_visivel = true
     end

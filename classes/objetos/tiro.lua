@@ -4,12 +4,12 @@ function Tiro:new(x, y, direcao, raio, tipo_tiro, dano, vel_tiro)
     self.posicao_inicial = Vector(x + 20, y - 18)
     self.posicao = Vector(x + 20, y - 18) -- menos 18 para alinhar tiro com sprite
     self.posicao_boss = Vector(x, y)
-    self.posicao_heroi = heroi:get_posicao_normalizada()
+    self.posicao_heroi = heroi.posicao
     self.raio = raio
     self.direcao = direcao
     self.dano = dano
     self.tipo_tiro = tipo_tiro
-    self.vel_y_tiro = math.abs(heroi:get_posicao_normalizada().y - y)
+    self.vel_y_tiro = math.abs(heroi.posicao.y - y)
     self.vel_x_tiro = vel_tiro
     self.distancia_tiro = 0
 end

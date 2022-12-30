@@ -1,6 +1,7 @@
 Boss = Classe:extend()
 
 function Boss:new(nome_inimigo, tipo_boss)
+    self.nome = 'boss'
     self.img = love.graphics.newImage("/materials/chars/" .. nome_inimigo .. ".png")
     self.largura_animacao = self.img:getWidth()
     self.altura_animacao = self.img:getHeight()
@@ -28,7 +29,7 @@ function Boss:new(nome_inimigo, tipo_boss)
     self.delay_ataque_avanco = 0 -- tempo para ataque de avanço
     self.tempo_ataque = 2.25 -- tempo alternar modos de ataques
     self.tiros = {}
-    self.posicao_heroi = heroi:get_posicao_normalizada()
+    self.posicao_heroi = heroi.posicao
     self.delay_dano = 0 -- tempo de espera para dar dano no heroi
     self.heroi_visivel = false
 end
@@ -38,8 +39,8 @@ function Boss:update(dt)
     self.anim_boss_parado:update(dt)
 
     -- Verifica se o heroi está atirando e se o boss escutou o tiro
-    local escutou_tomou_tiro = verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio_tiro, self.posicao, self.raio_deteccao)
-    local viu_heroi = verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, self.posicao, self.raio_deteccao)
+    local escutou_tomou_tiro = verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao)
+    local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
     if (heroi.atirando and escutou_tomou_tiro) or viu_heroi then
         if not self.heroi_visivel then
             self.direcao_olhando = 'esquerda'
@@ -64,7 +65,7 @@ function Boss:update(dt)
     -- Verifica se já terminou o tempo de recarga do ataque de avanco
     if self.delay_ataque_avanco >= 12 and self.delay_ataque_avanco <= 13 then
         self.estado_ataque = 'carregar avanco'
-        self.posicao_heroi = heroi:get_posicao_normalizada()
+        self.posicao_heroi = heroi.posicao
     elseif self.estado_ataque == 'carregar avanco' and self.delay_ataque_avanco > 14 then
         self.estado_ataque = 'avanco'
         self.tempo_ataque = 0
@@ -80,7 +81,7 @@ function Boss:update(dt)
 
     -- Verifica se está no modo de ataque tiro
     if self.delay_ataque_tiro >= 0.45 and self.estado_ataque == 'tiro' then
-        if self.posicao.x >= heroi:get_posicao_normalizada().x then
+        if self.posicao.x >= heroi.posicao.x then
             table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', self.dano_tiro, self.vel_tiro))
         else
             table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', self.dano_tiro, self.vel_tiro))
@@ -92,7 +93,7 @@ function Boss:update(dt)
     for i = #self.tiros, 1, -1 do
         self.tiros[i]:update(dt)
 
-        if verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, self.tiros[i].posicao, self.tiros[i].raio) then
+        if verifica_colisao(heroi.posicao, heroi.raio, self.tiros[i].posicao, self.tiros[i].raio) then
             heroi.vida = math.max(heroi.vida - self.tiros[i].dano, 0)
             table.remove(self.tiros, i)
         end
@@ -100,9 +101,9 @@ function Boss:update(dt)
 
     -- Verifica se o heroi está subindo ou descendo se estiver no estado_ataque tiro
     if self.estado_ataque == 'normal' or self.estado_ataque == 'tiro' then
-        if self.posicao.y > heroi:get_posicao_normalizada().y then
+        if self.posicao.y > heroi.posicao.y then
             self.estado_mov = 'subindo'
-        elseif self.posicao.y <= heroi:get_posicao_normalizada().y then
+        elseif self.posicao.y <= heroi.posicao.y then
             self.estado_mov = 'descendo'
         end
     elseif self.estado_ataque == 'carregar avanco' then

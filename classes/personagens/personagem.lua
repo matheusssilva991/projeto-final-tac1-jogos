@@ -15,7 +15,8 @@ function Personagem:new(x, y)
 
     self.estado = 'parado_dir'
     self.atirando = false
-    self.posicao = Vector(x, y)
+    self.posicao = Vector(x, y) + Vector(self.largura/2, self.altura/2)
+    self.pos_real = Vector(x, y)
     self.tiros = {}
     self.delay_tiro = 0
     self.raio = 20
@@ -27,7 +28,7 @@ function Personagem:new(x, y)
     self.tempo_colisao = 0
     self.vetor_direcao = Vector(0, 0)
 
-    self.collider = world:newBSGRectangleCollider(self.posicao.x+30, self.posicao.y+10, self.largura-60, self.altura-80, 10)
+    self.collider = world:newBSGRectangleCollider(self.pos_real.x+30, self.pos_real.y+10, self.largura-60, self.altura-80, 10)
     self.collider:setFixedRotation(true)
 end
 
@@ -48,7 +49,7 @@ function Personagem:update(dt)
         self.estado = 'andando_esq'
 
         if enfrentando_boss == true then
-            if self.posicao.x < 1600 then
+            if self.pos_real.x < 1600 then
                 vx = 0
             end
         end
@@ -80,15 +81,15 @@ function Personagem:update(dt)
         vx = self.vetor_direcao.x * 4
         vy = self.vetor_direcao.y * 4
 
-        if self.posicao.x < 20  then
+        if self.pos_real.x < 20  then
             vx = 0
-        elseif self.posicao.x >  bg.larg - 20 then
+        elseif self.pos_real.x >  bg.larg - 20 then
             vx = 0
         end  
 
-        if self.posicao.y > 425 then
+        if self.pos_real.y > 425 then
             vy = 0
-        elseif self.posicao.y < 150 then
+        elseif self.pos_real.y < 150 then
             vy = 0
         end
     elseif self.tempo_colisao > 0.30 and self.estado == 'colidindo' then
@@ -100,7 +101,7 @@ function Personagem:update(dt)
 
     -- verifica se colidiu com algum zumbi
     for i=1, #inimigos do
-        if verifica_colisao(heroi:get_posicao_normalizada(), heroi.raio, inimigos[i].posicao, inimigos[i].raio) then
+        if verifica_colisao(heroi.posicao, heroi.raio, inimigos[i].posicao, inimigos[i].raio) then
             inimigos[i].colidindo = true
             if inimigos[i].delay_dano == 0 then
                 heroi.vida = math.max(heroi.vida - inimigos[i].dano, 0)
@@ -109,10 +110,10 @@ function Personagem:update(dt)
     end
 
     -- Verifica se colidiu com o boss
-    if boss ~= nil and verifica_colisao(self:get_posicao_normalizada(), self.raio, boss.posicao, boss.raio) and self.estado ~= 'colidindo' then
+    if boss ~= nil and verifica_colisao(self.posicao, self.raio, boss.posicao, boss.raio) and self.estado ~= 'colidindo' then
         self.estado_anterior = self.estado
         self.estado = 'colidindo'
-        self.vetor_direcao = self:get_posicao_normalizada() - boss.posicao
+        self.vetor_direcao = self.posicao - boss.posicao
         self.tipo_colisao = 'boss'
 
         if boss.delay_dano == 0 then
@@ -128,80 +129,105 @@ function Personagem:update(dt)
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'esquerda', 2, 'heroi', 35, 1000)
+           tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', 35, 1000)
         elseif self.estado == 'parado_dir' then
-            tiro = Tiro(self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, 'direita', 2, 'heroi', 35, 1000)
+            tiro = Tiro(self.posicao.x, self.posicao.y, 'direita', 2, 'heroi', 35, 1000)
         end
         table.insert(self.tiros, tiro)
     end
 
     -- Verifica colisão dos tiros
+    local itens_mapa = {}
+
+    for i=#inimigos, 1, -1 do
+        table.insert(itens_mapa, inimigos[i])
+    end
+
+    for i=#caixas, 1, -1 do
+        table.insert(itens_mapa, caixas[i])
+    end
+
+    if boss ~= nil then
+        table.insert(itens_mapa, boss)
+    end
+
+    bubblesort_x(itens_mapa)
+
     for i = #self.tiros, 1, -1 do
         self.tiros[i]:update(dt)
-    
         local cond_loop = true
-        local j = 1
-        local colisao_boss = false
-        local colisao_zumbi = false
+        local index_colisao = -1
 
-        if boss ~= nil and verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, boss.posicao, boss.raio) then
-            colisao_boss = true
+        if self.tiros[i].direcao == 'direita' then
+            local j = 1
+            while j <= #itens_mapa and cond_loop do
+                if verifica_colisao(itens_mapa[j].posicao, itens_mapa[j].raio, self.tiros[i].posicao, self.tiros[i].raio) then
+                    index_colisao = j
+                    cond_loop = false
+                end
+                j=j+1
+            end
+        elseif self.tiros[i].direcao == 'esquerda' then
+            local j = #itens_mapa
+            while j >= 1 and cond_loop do
+                if verifica_colisao(itens_mapa[j].posicao, itens_mapa[j].raio, self.tiros[i].posicao, self.tiros[i].raio) then
+                    index_colisao = j
+                    cond_loop = false
+                end
+                j=j-1
+            end
         end
 
-        -- Verifica se o tiro colidiu com algum zumbi
-        while j <= #inimigos and cond_loop do
-            if verifica_colisao(self.tiros[i].posicao, self.tiros[i].raio, inimigos[j].posicao, inimigos[j].raio) then
-                if self.tiros[i].direcao == 'direita' and colisao_boss then --Verifica quem o tiro acertou primeiro direita
-                    if boss ~= nil and boss.posicao.x < inimigos[i].posicao.x then
-                        boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
-                        boss.heroi_visivel = true
-                    else
-                        inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
-                        inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
-                        colisao_zumbi = true
-                        inimigos[j].heroi_visivel = true    
-                    end
-                elseif self.tiros[i].direcao == 'esquerda' and colisao_boss then --Verifica quem o tiro acertou primeiro esq
-                    if boss ~= nil and boss.posicao.x > inimigos[i].posicao.x then
-                        boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
-                        boss.heroi_visivel = true
-                    else
-                        inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
-                        inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
-                        colisao_zumbi = true  
-                        inimigos[j].heroi_visivel = true 
-                    end
-                else -- não atingiu boss, apenas zumbi
-                    inimigos[j].vida = math.max(inimigos[j].vida - self.tiros[i].dano, 0)
-                    inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
-                    colisao_zumbi = true  
-                    inimigos[j].heroi_visivel = true 
-                end  
+        if index_colisao ~= -1 then
+            if itens_mapa[index_colisao].nome == 'boss' then
+                boss.vida = boss.vida - self.tiros[i].dano
+                boss.heroi_visivel = true
 
-                if inimigos[j].vida <= 0 then
-                    inimigos[j].collider:destroy()
-                    table.remove(inimigos, j)
-                end
-
-                if boss ~= nil and boss.vida <= 0 then
+                if boss.vida <= 0 then
                     boss = nil
                 end
+            elseif itens_mapa[index_colisao].nome == 'zumbi' then
+                local cond_loop = true
+                local j = #inimigos
+                
+                while j >= 1 and cond_loop do
+                    if inimigos[j] == itens_mapa[index_colisao] then
+                        inimigos[j].vida = inimigos[j].vida - self.tiros[i].dano
+                        inimigos[j].barra_vida = inimigos[j].barra_vida * (inimigos[j].vida/inimigos[j].temp_vida)
+                        inimigos[j].heroi_visivel = true
+                        
+                        if inimigos[j].vida <= 0 then
+                            inimigos[j].collider:destroy()
+                            table.remove(inimigos, j)
+                        end
+                    end
 
-                cond_loop = false
-                table.remove(self.tiros, i)   
+                    j=j-1
+                end
+            else
+                local cond_loop = true
+                local j = #caixas
+                
+                while j >= 1 and cond_loop do
+                    if caixas[j] == itens_mapa[index_colisao] then
+                        caixas[j].vida = caixas[j].vida - self.tiros[i].dano
+                        caixas[j].numero_tiros = caixas[j].numero_tiros + 1
+                        caixas[j].acertou = true
+
+                        if caixas[j].vida <= 0 then
+                            caixas[j].collider:destroy()
+                            table.remove(caixas, j)
+                        end
+                    end
+
+                    j=j-1
+                end
             end
-            j=j+1
+
+            table.remove(self.tiros, i)
         end
-        
-        if colisao_boss and not colisao_zumbi then
-            boss.vida = math.max(boss.vida - self.tiros[i].dano, 0)
-            table.remove(self.tiros, i)  
-            boss.heroi_visivel = true
 
-            if boss ~= nil and boss.vida <= 0 then
-                boss = nil
-            end
-        elseif not colisao_boss and not colisao_zumbi and self.tiros[i].distancia_tiro >= 800 then
+        if self.tiros[i] ~= nil and self.tiros[i].distancia_tiro >= 600 then
             table.remove(self.tiros, i)
         end
     end
@@ -215,27 +241,27 @@ function Personagem:draw()
     -- Verifica o estado e qual direção o heroi está olhando
     if self.estado == 'parado_esq' or (self.estado_anterior == 'parado_esq' and self.estado == 'colidindo') then
         if self.atirando then 
-            self.animation_atirando:draw(self.img, self.posicao.x + self.largura, self.posicao.y, 0, -1, 1)
+            self.animation_atirando:draw(self.img, self.pos_real.x + self.largura, self.pos_real.y, 0, -1, 1)
         else
-            self.animation_parado:draw(self.img, self.posicao.x + self.largura, self.posicao.y, 0, -1, 1)
+            self.animation_parado:draw(self.img, self.pos_real.x + self.largura, self.pos_real.y, 0, -1, 1)
         end
     elseif self.estado == 'parado_dir' or (self.estado_anterior == 'parado_dir' and self.estado == 'colidindo') then 
         if self.atirando then  
-            self.animation_atirando:draw(self.img, self.posicao.x, self.posicao.y, 0, 1, 1)
+            self.animation_atirando:draw(self.img, self.pos_real.x, self.pos_real.y, 0, 1, 1)
         else
-            self.animation_parado:draw(self.img, self.posicao.x, self.posicao.y, 0, 1, 1)
+            self.animation_parado:draw(self.img, self.pos_real.x, self.pos_real.y, 0, 1, 1)
         end
     elseif self.estado == 'andando_esq' or (self.estado_anterior == 'andando_esq' and self.estado == 'colidindo') then 
-        self.animation_andando:draw(self.img, self.posicao.x + self.largura, self.posicao.y, 0, -1, 1)
+        self.animation_andando:draw(self.img, self.pos_real.x + self.largura, self.pos_real.y, 0, -1, 1)
     elseif self.estado == 'andando_dir' or (self.estado_anterior == 'andando_dir' and self.estado == 'colidindo') then 
-        self.animation_andando:draw(self.img, self.posicao.x, self.posicao.y, 0, 1, 1)
+        self.animation_andando:draw(self.img, self.pos_real.x, self.pos_real.y, 0, 1, 1)
     end
     
     for i=1, #self.tiros do
         self.tiros[i]:draw()
     end
 
-    love.graphics.circle("line", self.posicao.x + self.largura/2, self.posicao.y + self.altura/2, self.raio)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, 5)
 end
 
 function Personagem:verifica_estado_andando()
@@ -244,13 +270,4 @@ function Personagem:verifica_estado_andando()
     elseif self.estado == 'parado_dir' or self.estado == 'andando_dir' then
         self.estado = 'andando_dir'
     end
-end
-
-function Personagem:get_posicao_normalizada()
-    local x, y
-
-    x = self.posicao.x + self.largura/2
-    y = self.posicao.y + self.altura/2
-
-    return Vector(x, y)
 end
