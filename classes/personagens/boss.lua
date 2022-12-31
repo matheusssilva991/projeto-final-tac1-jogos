@@ -41,7 +41,7 @@ function Boss:update(dt)
     -- Verifica se o heroi está atirando e se o boss escutou o tiro
     local escutou_tomou_tiro = verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao)
     local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
-    if (heroi.atirando and escutou_tomou_tiro) or viu_heroi then
+    if (heroi.atirando and escutou_tomou_tiro and heroi.posicao.x > 1600) or viu_heroi then
         if not self.heroi_visivel then
             self.direcao_olhando = 'esquerda'
         end

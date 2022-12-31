@@ -42,6 +42,7 @@ function Fase2:new()
     -- Boss
     tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=20, vida=1200, raio=70, raio_deteccao=200, vel=1000, vel_tiro=400, op=2}
     boss = Boss("inimigos", tipo_boss)
+    vida_boss_pctg = 200/tipo_boss.vida
 
     -- Caixas
     caixas = {Caixa(Vector(220, 330)),

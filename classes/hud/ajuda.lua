@@ -1,11 +1,12 @@
-Start = Classe:extend()
+Ajuda = Classe:extend()
 
 ALTURA_BOTAO = 50
 
-local function newButton(text, fn)
+local function newButton(text, fn, ajuda_text)
     return{
         text = text,
         fn = fn,
+        ajuda_text = ajuda_text,
 
         now = false,
         last = false
@@ -15,58 +16,85 @@ end
 local botoes = {}
 local font = nil
 
-function Start:new()
+function Ajuda:new()
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     opc = 0
-    botoes = {}
 
     table.insert(botoes, newButton(
-        "Jogar",
+        "W",
         function()
-            cena_atual = "jogo"
-            jogo:new()
-        end
+            
+        end,
+        "ANDAR PARA CIMA"
     ))
 
     table.insert(botoes, newButton(
-        "Ranking",
+        "S",
         function()
-            cena_atual = "ranking"
-        end
+            
+        end,
+        "ANDAR PARA BAIXO"
     ))
 
     table.insert(botoes, newButton(
-        "Ajuda",
+        "A",
         function()
-            cena_atual = "ajuda"
-        end
+            
+        end,
+        "ANDAR PARA A ESQUERDA"
     ))
 
     table.insert(botoes, newButton(
-        "Sair",
+        "D",
         function()
-            love.event.quit(0)
-        end
+            
+        end,
+        "ANDAR PARA A DIREITA"
     ))
 
+    table.insert(botoes, newButton(
+        "BEM",
+        function()
+            
+        end,
+        "ATIRAR"
+    ))
+
+    table.insert(botoes, newButton(
+        "Voltar",
+        function()
+            cena_atual = "menu_inicial"
+        end
+    ))
 end
 
-function Start:update(dt)
+function Ajuda:update(dt)
     
 end
 
-function Start:draw()
-    local larg_botao = 250
+function Ajuda:draw()
+    local larg_botao = nil
     local margem = 20
 
     local total_altura = (ALTURA_BOTAO + margem) * #botoes
     local cursor_y = 0
 
-    for _, botao in ipairs(botoes) do
+    for i, botao in ipairs(botoes) do
         botao.last = botao.now
 
-        local bx = (LARGURA_TELA * 0.5) - (larg_botao * 0.5)
-        local by = (ALTURA_TELA * 0.5) - (total_altura * 0.5) + cursor_y
+        if botao.text == "Voltar" then
+            larg_botao = 170
+        elseif botao.text == "BEM" then
+            larg_botao = 100
+            margem = 120
+        else
+            larg_botao = 50
+        end
+
+        local bx = 50
+        local by = ((ALTURA_TELA * 0.5) - (total_altura * 0.5) + cursor_y) - 40
+
+        
 
         local color = {0.3, 0, 0.5, 1}
         local mx, my = love.mouse.getPosition()
@@ -107,18 +135,20 @@ function Start:draw()
         love.graphics.print(
             botao.text,
             font,
-            (LARGURA_TELA * 0.5) - textLarg * 0.5,
+            50 + (larg_botao - textLarg) * 0.5,
             by + textAlt * 0.25
         )
 
+        if botao.text ~= "Voltar" then
+            local font = nil
+            font = love.graphics.setNewFont(30)
+            local ty = font:getHeight()
+            love.graphics.setColor(0, 0, 0)
+            love.graphics.print("=  " .. botao.ajuda_text, bx + larg_botao + 20, by + (ALTURA_BOTAO - ty) * 0.5)
+            love.graphics.setColor(1, 1, 1)
+            love.graphics.print("=  " .. botao.ajuda_text, bx + larg_botao + 20 + 1, by + (ALTURA_BOTAO - ty) * 0.5 + 1)
+        end
+
         cursor_y = cursor_y + (ALTURA_BOTAO + margem)
     end
-
-    --love.graphics.print("opc: " .. opc, 10, 60)
-
-    --[[ love.graphics.setColor(0.3, 0, 0.5)
-    love.graphics.rectangle("fill", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("line", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    ]]
 end

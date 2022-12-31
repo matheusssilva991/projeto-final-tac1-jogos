@@ -1,4 +1,4 @@
-Start = Classe:extend()
+GameOver = Classe:extend()
 
 ALTURA_BOTAO = 50
 
@@ -15,13 +15,14 @@ end
 local botoes = {}
 local font = nil
 
-function Start:new()
+function GameOver:new()
+    id_jogador = 1
+    tabela_ranking = {}
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     opc = 0
-    botoes = {}
 
     table.insert(botoes, newButton(
-        "Jogar",
+        "Jogar Novamente",
         function()
             cena_atual = "jogo"
             jogo:new()
@@ -29,16 +30,9 @@ function Start:new()
     ))
 
     table.insert(botoes, newButton(
-        "Ranking",
+        "Menu Inicial",
         function()
-            cena_atual = "ranking"
-        end
-    ))
-
-    table.insert(botoes, newButton(
-        "Ajuda",
-        function()
-            cena_atual = "ajuda"
+            cena_atual = "menu_inicial"
         end
     ))
 
@@ -48,21 +42,20 @@ function Start:new()
             love.event.quit(0)
         end
     ))
-
 end
 
-function Start:update(dt)
+function GameOver:update(dt)
     
 end
 
-function Start:draw()
-    local larg_botao = 250
+function GameOver:draw()
+    local larg_botao = 400
     local margem = 20
 
     local total_altura = (ALTURA_BOTAO + margem) * #botoes
     local cursor_y = 0
 
-    for _, botao in ipairs(botoes) do
+    for i, botao in ipairs(botoes) do
         botao.last = botao.now
 
         local bx = (LARGURA_TELA * 0.5) - (larg_botao * 0.5)
@@ -113,12 +106,4 @@ function Start:draw()
 
         cursor_y = cursor_y + (ALTURA_BOTAO + margem)
     end
-
-    --love.graphics.print("opc: " .. opc, 10, 60)
-
-    --[[ love.graphics.setColor(0.3, 0, 0.5)
-    love.graphics.rectangle("fill", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("line", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    ]]
 end

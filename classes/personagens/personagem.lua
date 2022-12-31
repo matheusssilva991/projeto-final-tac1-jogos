@@ -23,6 +23,7 @@ function Personagem:new(x, y)
     self.raio_tiro = 450
     self.vida = 100
     self.vel = 230
+    self.dano = 25
 
     self.estado_anterior = nil
     self.tempo_colisao = 0
@@ -129,9 +130,9 @@ function Personagem:update(dt)
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', 35, 1000)
+           tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', self.dano, 1000)
         elseif self.estado == 'parado_dir' then
-            tiro = Tiro(self.posicao.x, self.posicao.y, 'direita', 2, 'heroi', 35, 1000)
+            tiro = Tiro(self.posicao.x, self.posicao.y, 'direita', 2, 'heroi', self.dano, 1000)
         end
         table.insert(self.tiros, tiro)
     end
@@ -261,7 +262,7 @@ function Personagem:draw()
         self.tiros[i]:draw()
     end
 
-    love.graphics.circle("line", self.posicao.x, self.posicao.y, 5)
+    --love.graphics.circle("line", self.posicao.x, self.posicao.y, 5)
 end
 
 function Personagem:verifica_estado_andando()

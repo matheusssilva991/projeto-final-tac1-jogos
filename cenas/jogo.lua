@@ -25,6 +25,7 @@ function Jogo:update(dt)
             elseif nivel_fase >= 3 then
                 table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
                 id_jogador = id_jogador + 1
+                cena_atual = "menu_inicial"
             end
         end
 
@@ -37,6 +38,8 @@ function Jogo:update(dt)
         else
             fase.estado = 'nao finalizado'
         end
+    else
+        cena_atual = "game_over"
     end
 end
 
