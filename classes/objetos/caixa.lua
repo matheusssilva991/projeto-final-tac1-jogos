@@ -11,7 +11,7 @@ function Caixa:new(posicao)
 
     self.posicao = posicao + Vector(50, 50)
     self.pos_real = posicao
-    self.vida = 100
+    self.vida = 75
     self.raio = 38
     self.numero_tiros = 0
     self.acertou = true
