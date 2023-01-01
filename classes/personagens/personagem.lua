@@ -23,7 +23,7 @@ function Personagem:new(x, y)
     self.raio_tiro = 450
     self.vida = 100
     self.vel = 230
-    self.dano = 25
+    self.dano = 400
 
     self.estado_anterior = nil
     self.tempo_colisao = 0

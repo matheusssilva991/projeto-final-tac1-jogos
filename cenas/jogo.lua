@@ -5,12 +5,10 @@ function Jogo:new()
     require "cenas/fase2"
     require "cenas/fase3"
 
-    id_jogador = 1
     nivel_fase = 1
     trocou_fase = false
     tempo_jogo = 0
     fase = Fase1()
-    tabela_ranking = {}
 end
 
 function Jogo:update(dt)
@@ -25,7 +23,7 @@ function Jogo:update(dt)
             elseif nivel_fase >= 3 then
                 table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
                 id_jogador = id_jogador + 1
-                cena_atual = "menu_inicial"
+                cena_atual = "game_over"
             end
         end
 

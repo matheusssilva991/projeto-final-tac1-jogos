@@ -30,6 +30,9 @@ function love.load()
 
     jogo = Jogo()
     cena_atual = "menu_inicial"
+
+    tabela_ranking = {}
+    id_jogador = 1
 end
 
 function love.update(dt)
