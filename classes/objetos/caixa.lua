@@ -9,10 +9,10 @@ function Caixa:new(posicao)
     self.larg_frame = self.larg/4
     self.alt_frame = self.alt/3
 
-    self.posicao = posicao + Vector(50, 50)
+    self.posicao = posicao + Vector(50, 47)
     self.pos_real = posicao
     self.vida = 75
-    self.raio = 38
+    self.raio = 36
     self.numero_tiros = 0
     self.acertou = true
     self.tempo_caixa = 0
