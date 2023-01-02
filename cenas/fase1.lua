@@ -16,7 +16,7 @@ function Fase1:new()
     self.delay_mudar_fase = 0
     self.alpha = 0
 
-    self.tempo = 7
+    self.tempo = 15
     self.alpha2 = 1
     self.alphaTxt = 1
 
@@ -196,7 +196,9 @@ function Fase1:draw()
     font = love.graphics.setNewFont(30)
     love.graphics.setColor(1, 1, 1, self.alphaTxt)
     if self.tempo > 0 then
-        love.graphics.printf("A ex-policial Luiza Inarcia acorda de um coma no hospital após um grave acidente na metalúrgica em que trabalhava.",
+        love.graphics.printf("A ex-policial Luiza Inarcia acorda de um coma no hospital após um grave acidente na metalúrgica em que trabalhava."..
+                            " Ao procurar ajuda dos profissionais do hospital, percebe que não há ninguém naquele andar... nem no resto edifício."..
+                            " Ao olhar pela janela percebe uma estranha movimentação na rua. Descendo para o térreo encontra um policial morto junto com um rifle.",
                             100, 100, 600, "center")
         love.graphics.setColor(1, 1, 1, self.skipPulse)
         love.graphics.printf("Pressione ESPAÇO para pular", 100, 550, 600, "center")
