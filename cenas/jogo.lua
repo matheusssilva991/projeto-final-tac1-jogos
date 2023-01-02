@@ -44,8 +44,9 @@ end
 function Jogo:draw()
     fase:draw()
     love.graphics.setColor(0, 0, 0)
-    --love.graphics.print("tempo jogo: " .. tonumber(string.format("%.2f", tempo_jogo)), 10, 10)
+    love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 20, 10)
     love.graphics.setColor(1, 1, 1)
+    love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 22, 12)
 end
 
 function verifica_colisao(A, raio_1, B, raio_2)
@@ -116,6 +117,31 @@ function bubblesort_x(array)
         local ci = i
         ::redo::
         if swap_x(ci, ci+1, array) then
+            ci = ci - 1
+            goto redo
+        end
+    end
+end
+
+function swap_ranking(a, b, table)
+    if table[a] == nil or table[b] == nil then
+        return false
+    end
+ 
+    if table[a].tempo_jogo > table[b].tempo_jogo then
+        table[a], table[b] = table[b], table[a]
+        return true
+    end
+
+    return false
+end
+
+function bubblesort_ranking(array)
+    for i=1,table.maxn(array) do
+
+        local ci = i
+        ::redo::
+        if swap_ranking(ci, ci+1, array) then
             ci = ci - 1
             goto redo
         end
