@@ -196,7 +196,7 @@ function Fase1:draw()
     font = love.graphics.setNewFont(30)
     love.graphics.setColor(1, 1, 1, self.alphaTxt)
     if self.tempo > 0 then
-        love.graphics.printf("texto introdutorio aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        love.graphics.printf("A ex-policial Luiza Inarcia acorda de um coma no hospital após um grave acidente na metalúrgica em que trabalhava.",
                             100, 100, 600, "center")
         love.graphics.setColor(1, 1, 1, self.skipPulse)
         love.graphics.printf("Pressione ESPAÇO para pular", 100, 550, 600, "center")
