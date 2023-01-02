@@ -16,7 +16,7 @@ function Fase2:new()
     self.delay_mudar_fase = 0
     self.alpha = 0
 
-    self.tempo = 15
+    self.tempo = 30
     self.alpha2 = 1
     self.alphaTxt = 1
 
@@ -188,6 +188,9 @@ function Fase2:draw()
     font = love.graphics.setNewFont(30)
     love.graphics.setColor(1, 1, 1, self.alphaTxt)
     if self.tempo > 0 then
+        font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
+        love.graphics.printf("Capítulo 2: Casa... casa?", 0, 30, 800, "center")
+        font = love.graphics.setNewFont(30)
         love.graphics.printf("A descoberta de que o mundo mudou enquanto estava desacordada ainda é um choque para a ex-policial."..
                             " Todo o centro da cidade agora é habitado por criaturas irracionais com sede de sangue, que não deixaram à Luiza nenhuma opção senão eliminá-los."..
                             " Agora, chegando no bairro residencial onde morava, ela tenta encontrar sua família, ou, pelo menos, respostas que a levem a encontrar seu marido e filhas.",

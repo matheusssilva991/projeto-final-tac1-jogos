@@ -16,7 +16,7 @@ function Fase1:new()
     self.delay_mudar_fase = 0
     self.alpha = 0
 
-    self.tempo = 15
+    self.tempo = 30
     self.alpha2 = 1
     self.alphaTxt = 1
 
@@ -196,6 +196,9 @@ function Fase1:draw()
     font = love.graphics.setNewFont(30)
     love.graphics.setColor(1, 1, 1, self.alphaTxt)
     if self.tempo > 0 then
+        font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
+        love.graphics.printf("Capítulo 1: O despertar", 0, 30, 800, "center")
+        font = love.graphics.setNewFont(30)
         love.graphics.printf("A ex-policial Luiza Inarcia acorda de um coma no hospital após um grave acidente na metalúrgica em que trabalhava."..
                             " Ao procurar ajuda dos profissionais do hospital, percebe que não há ninguém naquele andar... nem no resto edifício."..
                             " Ao olhar pela janela percebe uma estranha movimentação na rua. Descendo para o térreo encontra um policial morto junto com um rifle.",

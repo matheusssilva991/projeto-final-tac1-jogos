@@ -139,7 +139,7 @@ function Ajuda2:draw()
                 "- Ao atirar, você fará com que os zumbis mais próximos comecem a te seguir.",
                 "- Os zumbis continuarão te seguindo mesmo durante o combate contra os chefões.",
                 "- Quebre as caixas para desobstruir o caminho até o fim do mapa.",
-                "- Sua vida será restaurada sempre que você passar de fase."
+                "- Sua vida será restaurada sempre que você passar de fase, ou seja, após derrotar o chefão do mapa."
                 }
 
     local altTxt = 80

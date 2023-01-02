@@ -16,7 +16,7 @@ function Fase3:new()
     self.delay_mudar_fase = 0
     self.alpha = 0
 
-    self.tempo = 7
+    self.tempo = 30
     self.alpha2 = 1
     self.alphaTxt = 1
 
@@ -189,7 +189,12 @@ function Fase3:draw()
     font = love.graphics.setNewFont(30)
     love.graphics.setColor(1, 1, 1, self.alphaTxt)
     if self.tempo > 0 then
-        love.graphics.printf("texto de transição aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
+        love.graphics.printf("Capítulo 3: Esperanca", 0, 30, 800, "center")
+        font = love.graphics.setNewFont(30)
+        love.graphics.printf("Exausta e desolada com suas recentes descobertas, Luiza caminha por uma estrada deserta, usando como combustível sua última gota de esperança."..
+                            " Esperança essa que lhe foi dada por uma família... aparentemente a única remanescente em seu antigo bairro. Eles a informaram sobre um suposto abrigo"..
+                            " que ficaria localizado na zona rural da cidade, e que, se esse abrigo realmente existisse, sua família poderia estar lá...",
                             100, 100, 600, "center")
         love.graphics.setColor(1, 1, 1, self.skipPulse)
         love.graphics.printf("Pressione ESPAÇO para pular", 100, 550, 600, "center")

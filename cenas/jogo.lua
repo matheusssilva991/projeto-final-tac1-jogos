@@ -58,7 +58,7 @@ function Jogo:draw()
     love.graphics.setColor(0, 0, 0)
     love.graphics.setColor(1, 1, 1)
 
-    if fase.tempo >= 0 then
+    if fase.tempo <= 0 then
         love.graphics.setColor(0, 0, 0)
         love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 20, 10)
         love.graphics.setColor(1, 1, 1)
