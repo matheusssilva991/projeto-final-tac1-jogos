@@ -13,11 +13,9 @@ local function newButton(text, fn)
 end
 
 local botoes = {}
-local font = nil
 
 function Start:new()
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
-    opc = 0
     botoes = {}
 
     table.insert(botoes, newButton(
@@ -38,7 +36,7 @@ function Start:new()
     table.insert(botoes, newButton(
         "Ajuda",
         function()
-            cena_atual = "ajuda"
+            cena_atual = "ajuda1"
         end
     ))
 
@@ -79,7 +77,7 @@ function Start:draw()
 
         botao.now = love.mouse.isDown(1)
 
-        if botao.now and not botao.last and hot then
+        if botao.now and mouse_delay <= 0 and not botao.last and hot then
             botao.fn()
         end
 
@@ -113,12 +111,4 @@ function Start:draw()
 
         cursor_y = cursor_y + (ALTURA_BOTAO + margem)
     end
-
-    --love.graphics.print("opc: " .. opc, 10, 60)
-
-    --[[ love.graphics.setColor(0.3, 0, 0.5)
-    love.graphics.rectangle("fill", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("line", self.startScreenX, self.startScreenY, 300, 500, 20, 20)
-    ]]
 end

@@ -23,7 +23,7 @@ function Personagem:new(x, y)
     self.raio_tiro = 450
     self.vida = 100
     self.vel = 230
-    self.dano = 25
+    self.dano = 30
 
     self.estado_anterior = nil
     self.tempo_colisao = 0
@@ -124,7 +124,7 @@ function Personagem:update(dt)
 
     -- Checa se o personagem  atirou
     local tmp_cond_parado = (self.estado == 'parado_esq' or self.estado == 'parado_dir')
-    if love.mouse.isDown(1) and not self.atirando and tmp_cond_parado then
+    if love.mouse.isDown(1) and not self.atirando and tmp_cond_parado and mouse_delay <=0 then
         self.atirando = true
         
         local tiro
@@ -152,7 +152,7 @@ function Personagem:update(dt)
         table.insert(itens_mapa, boss)
     end
 
-    bubblesort_x(itens_mapa)
+    sort_posicao_x(itens_mapa)
 
     for i = #self.tiros, 1, -1 do
         self.tiros[i]:update(dt)

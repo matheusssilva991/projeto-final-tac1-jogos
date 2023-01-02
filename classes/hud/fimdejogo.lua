@@ -13,11 +13,10 @@ local function newButton(text, fn)
 end
 
 local botoes = {}
-local font = nil
+--local font = nil
 
 function GameOver:new()
     id_jogador = 1
-    tabela_ranking = {}
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     opc = 0
 

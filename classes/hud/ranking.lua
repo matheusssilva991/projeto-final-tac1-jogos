@@ -27,7 +27,7 @@ function Ranking:new()
 end
 
 function Ranking:update(dt)
-    bubblesort_ranking(tabela_ranking)
+    sort_ranking(tabela_ranking)
 end
 
 function Ranking:draw()
@@ -38,7 +38,7 @@ function Ranking:draw()
         love.graphics.setColor(0, 0, 0)
         love.graphics.print(tabela_ranking[i].nome .. " : " .. tabela_ranking[i].tempo_jogo, 10, ranking_y)
         love.graphics.setColor(1, 1, 1)
-        love.graphics.print(tabela_ranking[i].nome .. " : " .. tabela_ranking[i].tempo_jogo, 12, ranking_y + 2)
+        love.graphics.print(tabela_ranking[i].nome .. " : " .. tabela_ranking[i].tempo_jogo, 11, ranking_y + 1)
 
         ranking_y = ranking_y + ranking_alt * 2
     end

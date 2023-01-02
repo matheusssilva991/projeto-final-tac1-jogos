@@ -5,6 +5,8 @@ function Jogo:new()
     require "cenas/fase2"
     require "cenas/fase3"
 
+    estado_pause = "false"
+
     nivel_fase = 1
     trocou_fase = false
     tempo_jogo = 0
@@ -12,42 +14,67 @@ function Jogo:new()
 end
 
 function Jogo:update(dt)
-    if heroi.vida > 0 then
-        fase:update(dt)
-        tempo_jogo = tempo_jogo + dt
 
-        if fase.estado == 'finalizado' then
-            if nivel_fase < 3 then
-                nivel_fase = nivel_fase + 1
-                trocou_fase = true
-            elseif nivel_fase >= 3 then
-                table.insert(tabela_ranking, {nome='Jogador' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
-                id_jogador = id_jogador + 1
-                cena_atual = "game_over"
+    if estado_pause == "true" then
+        pause:update(dt)
+    end
+
+    if estado_pause == "false" then
+        if heroi.vida > 0 then
+            fase:update(dt)
+
+            if fase.tempo <= 0 and boss ~= nil then
+                tempo_jogo = tempo_jogo + dt
             end
-        end
 
-        if nivel_fase == 2 and trocou_fase then
-            trocou_fase = false
-            fase = Fase2()  
-        elseif nivel_fase == 3 and trocou_fase then
-            trocou_fase = false
-            fase = Fase3()
+            if fase.estado == 'finalizado' then
+                if nivel_fase < 3 then
+                    nivel_fase = nivel_fase + 1
+                    trocou_fase = true
+                elseif nivel_fase >= 3 then
+                    table.insert(tabela_ranking, {nome='Jogador ' .. id_jogador, tempo_jogo=tonumber(string.format("%.2f", tempo_jogo))})
+                    id_jogador = id_jogador + 1
+                    cena_atual = "game_over"
+                end
+            end
+
+            if nivel_fase == 2 and trocou_fase then
+                trocou_fase = false
+                fase = Fase2()  
+            elseif nivel_fase == 3 and trocou_fase then
+                trocou_fase = false
+                fase = Fase3()
+            else
+                fase.estado = 'nao finalizado'
+            end
         else
-            fase.estado = 'nao finalizado'
+            cena_atual = "game_over"
         end
-    else
-        cena_atual = "game_over"
     end
 end
 
 function Jogo:draw()
     fase:draw()
     love.graphics.setColor(0, 0, 0)
-    love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 20, 10)
     love.graphics.setColor(1, 1, 1)
-    love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 22, 12)
+
+    if fase.tempo >= 0 then
+        love.graphics.setColor(0, 0, 0)
+        love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 20, 10)
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.print("tempo: " .. tonumber(string.format("%.2f", tempo_jogo)), 22, 12)
+    end
+
+    pause:draw()
 end
+
+function love.keypressed(key)
+    if key == "escape" and estado_pause == "false" then
+        estado_pause = "true"
+    elseif key == "escape" and estado_pause == "true" then
+        estado_pause = "false"
+    end
+ end
 
 function verifica_colisao(A, raio_1, B, raio_2)
     if A.dist(A, B) <= raio_1 + raio_2 then
@@ -56,7 +83,7 @@ function verifica_colisao(A, raio_1, B, raio_2)
     return false
 end
 
-function swap_y(a, b, table)
+function swap(a, b, table)
     if table[a] == nil or table[b] == nil then
         return false
     end
@@ -86,64 +113,22 @@ function swap_y(a, b, table)
     return false
 end
 
-function bubblesort_y(array)
+function bubblesort(array)
     for i=1,table.maxn(array) do
 
         local ci = i
         ::redo::
-        if swap_y(ci, ci+1, array) then
+        if swap(ci, ci+1, array) then
             ci = ci - 1
             goto redo
         end
     end
 end
 
-function swap_x(a, b, table)
-    if table[a] == nil or table[b] == nil then
-        return false
-    end
- 
-    if table[a].posicao.x > table[b].posicao.x then
-        table[a], table[b] = table[b], table[a]
-        return true
-    end
-
-    return false
+function sort_posicao_x(obj)
+    table.sort(obj, function(k1, k2) return k1.posicao.x < k2.posicao.x end)
 end
 
-function bubblesort_x(array)
-    for i=1,table.maxn(array) do
-
-        local ci = i
-        ::redo::
-        if swap_x(ci, ci+1, array) then
-            ci = ci - 1
-            goto redo
-        end
-    end
-end
-
-function swap_ranking(a, b, table)
-    if table[a] == nil or table[b] == nil then
-        return false
-    end
- 
-    if table[a].tempo_jogo > table[b].tempo_jogo then
-        table[a], table[b] = table[b], table[a]
-        return true
-    end
-
-    return false
-end
-
-function bubblesort_ranking(array)
-    for i=1,table.maxn(array) do
-
-        local ci = i
-        ::redo::
-        if swap_ranking(ci, ci+1, array) then
-            ci = ci - 1
-            goto redo
-        end
-    end
+function sort_ranking(obj) 
+    table.sort(obj, function(k1, k2) return k1.tempo_jogo < k2.tempo_jogo end)
 end
