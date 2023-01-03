@@ -139,7 +139,6 @@ function Fase1:update(dt)
         if heroi.posicao.x >= 1600 then
             enfrentando_boss = true
             cam:lockX(2000, camera.smooth.linear(350))
-            --cam:zoomTo(2)
         end
     end
 end
