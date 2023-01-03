@@ -10,7 +10,8 @@ function Personagem:new(x, y)
     local grid = anim.newGrid(self.largura, self.altura, self.largura_animacao, self.altura_animacao)
     self.animation_andando = anim.newAnimation(grid('1-8', 3, '1-6', 4), 0.1)
     self.animation_parado = anim.newAnimation(grid('7-7', 4), 0.1)
-    --self.animation_atirando = anim.newAnimation(grid('1-8', 2), 0.1)
+    self.animation_morrendo = anim.newAnimation(grid('7-8', 4, '1-8', 5), 0.1)
+    self.animation_morrendo_final = anim.newAnimation(grid('7-8', 5), 0.1)
     self.animation_atirando = anim.newAnimation(grid('1-5', 2), 0.1)
 
     self.estado = 'parado_dir'
@@ -45,7 +46,7 @@ function Personagem:update(dt)
     local vy = 0
     
     -- Verifica se está andando pra esquerda ou direita
-    if love.keyboard.isDown("a") and self.estado ~= 'colidindo' then
+    if love.keyboard.isDown("a") and self.estado ~= 'colidindo' and self.vida > 0 then
         vx = self.vel * -1
         self.estado = 'andando_esq'
 
@@ -54,16 +55,16 @@ function Personagem:update(dt)
                 vx = 0
             end
         end
-    elseif love.keyboard.isDown("d") and self.estado ~= 'colidindo' then
+    elseif love.keyboard.isDown("d") and self.estado ~= 'colidindo' and self.vida > 0 then
         vx = self.vel
         self.estado = 'andando_dir'   
     end
 
     -- Verifica se está andando para cima ou para baixo
-    if love.keyboard.isDown("w") and self.estado ~= 'colidindo' then
+    if love.keyboard.isDown("w") and self.estado ~= 'colidindo' and self.vida > 0 then
         vy = self.vel * -1
         self:verifica_estado_andando()
-    elseif love.keyboard.isDown("s") and self.estado ~= 'colidindo' then
+    elseif love.keyboard.isDown("s") and self.estado ~= 'colidindo' and self.vida > 0 then
         vy = self.vel
         self:verifica_estado_andando()
     end
@@ -98,14 +99,18 @@ function Personagem:update(dt)
         self.estado = 'andando_dir'
     end
 
-    self.collider:setLinearVelocity(vx, vy)
+    if heroi.vida > 0 then
+        self.collider:setLinearVelocity(vx, vy)
+    end
 
     -- verifica se colidiu com algum zumbi
     for i=1, #inimigos do
         if verifica_colisao(heroi.posicao, heroi.raio, inimigos[i].posicao, inimigos[i].raio) then
             inimigos[i].colidindo = true
             if inimigos[i].delay_dano == 0 then
+                inimigos[i].esta_atacando = true
                 heroi.vida = math.max(heroi.vida - inimigos[i].dano, 0)
+                inimigos[i].som_ataque:play()
             end
         end
     end
@@ -126,11 +131,11 @@ function Personagem:update(dt)
     local tmp_cond_parado = (self.estado == 'parado_esq' or self.estado == 'parado_dir')
     if love.mouse.isDown(1) and not self.atirando and tmp_cond_parado and mouse_delay <=0 then
         self.atirando = true
-        
+
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', self.dano, 1000)
+            tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', self.dano, 1000)
         elseif self.estado == 'parado_dir' then
             tiro = Tiro(self.posicao.x, self.posicao.y, 'direita', 2, 'heroi', self.dano, 1000)
         end
@@ -233,9 +238,21 @@ function Personagem:update(dt)
         end
     end
     
+    if self.vida <= 0 then
+        if self.estado == 'andando_dir' or self.estado == 'parado_dir' then
+            self.estado = 'morrendo_dir'
+            self.estado_anterior = 'morrendo_dir'
+        elseif self.estado == 'andando_esq' or self.estado == 'parado_esq' then
+            self.estado = 'morrendo_esq'
+            self.estado_anterior = 'morrendo_esq'
+        end
+    end
+    
     self.animation_andando:update(dt)
     self.animation_parado:update(dt)
     self.animation_atirando:update(dt)
+    self.animation_morrendo:update(dt)
+    self.animation_morrendo_final:update(dt)
 end
 
 function Personagem:draw()
@@ -256,6 +273,14 @@ function Personagem:draw()
         self.animation_andando:draw(self.img, self.pos_real.x + self.largura, self.pos_real.y, 0, -1, 1)
     elseif self.estado == 'andando_dir' or (self.estado_anterior == 'andando_dir' and self.estado == 'colidindo') then 
         self.animation_andando:draw(self.img, self.pos_real.x, self.pos_real.y, 0, 1, 1)
+    elseif self.estado == 'morrendo_esq' then
+        self.animation_morrendo:draw(self.img, self.pos_real.x + self.largura, self.pos_real.y, 0, -1, 1)
+    elseif self.estado == 'morrendo_dir' then
+        self.animation_morrendo:draw(self.img, self.pos_real.x, self.pos_real.y, 0, 1, 1)
+    elseif self.estado == 'morrendo_esq_final' then
+        self.animation_morrendo_final:draw(self.img, self.pos_real.x + self.largura, self.pos_real.y, 0, -1, 1)
+    elseif self.estado == 'morrendo_dir_final' then
+        self.animation_morrendo_final:draw(self.img, self.pos_real.x, self.pos_real.y, 0, 1, 1)
     end
     
     for i=1, #self.tiros do

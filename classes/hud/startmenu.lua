@@ -15,6 +15,14 @@ end
 local botoes = {}
 
 function Start:new()
+    self.img_fundo = love.graphics.newImage("materials/background/fundo_menu.png")
+    self.larg_img = self.img_fundo:getWidth()
+    self.alt_img = self.img_fundo:getHeight()
+    self.larg_frame = self.larg_img/3
+    self.alt_frame = self.alt_img
+    local grid = anim.newGrid(self.larg_frame, self.alt_frame, self.larg_img, self.alt_img)
+    self.animation = anim.newAnimation(grid('1-3', 1), 0.1)
+
     font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
     botoes = {}
 
@@ -50,10 +58,18 @@ function Start:new()
 end
 
 function Start:update(dt)
-    
+    self.animation:update(dt)
 end
 
 function Start:draw()
+    self.animation:draw(self.img_fundo, 0, 0)
+    font = love.graphics.setNewFont("materials/fonts/Dead-Kansas.ttf", 50)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.printf("THE ALCKMIN DEADI", 0, 40, 800, "center")
+    love.graphics.setColor(1, 1, 1, 0.2)
+    love.graphics.printf("THE ALCKMIN DEADI", 0, 40, 800, "center")
+    font = love.graphics.setNewFont("materials/fonts/Melted-Monster.ttf", 40)
+
     local larg_botao = 250
     local margem = 20
 

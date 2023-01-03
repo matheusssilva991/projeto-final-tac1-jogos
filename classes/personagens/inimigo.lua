@@ -9,6 +9,12 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     self.largura = 100
     self.altura = 100
 
+    --Audio
+    self.som_grunhido = love.audio.newSource("/materials/audio/zombie-growl-3-6863.mp3", "static")
+    self.som_grunhido:setVolume(0.03)
+    self.som_ataque = love.audio.newSource("/materials/audio/zombie-6851.mp3", "static")
+    self.som_ataque:setVolume(0.03)
+
     local g_inimigos = anim.newGrid(self.largura, self.altura, self.largura_animacao, self.altura_animacao)
     self.anim_inimigos = anim.newAnimation(g_inimigos('1-4', tipos_inimigos.op), 0.15)
     self.anim_inimigos_parado = anim.newAnimation(g_inimigos('1-1', tipos_inimigos.op), 0.15)
@@ -23,6 +29,8 @@ function Inimigo:new(nome_inimigo, tipos_inimigos, posicao)
     self.temp_vida = tipos_inimigos.vida
     self.barra_vida = 56
     self.raio = 35
+
+    self.esta_atacando = false
 
     self.objetivo = Vector(0, 0)
     self.vel_desejada = Vector(0, 0)
@@ -66,8 +74,9 @@ function Inimigo:update(dt)
     -- Verificar se o personagem(heroi) entrou na visão do inimigo
     local viu_heroi = verifica_colisao(heroi.posicao, heroi.raio, self.posicao, self.raio_deteccao)
     local escutou_tiro = (heroi.atirando and verifica_colisao(heroi.posicao, heroi.raio_tiro, self.posicao, self.raio_deteccao))
-    if viu_heroi or escutou_tiro then
+    if (viu_heroi or escutou_tiro) and not self.esta_atacando then
         self.heroi_visivel = true
+        self.som_grunhido:play()
     end
 
     local vx, vy = 0, 0

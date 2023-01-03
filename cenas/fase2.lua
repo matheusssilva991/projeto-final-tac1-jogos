@@ -47,7 +47,7 @@ function Fase2:new()
                 Inimigo("inimigos", tipos_inimigos[1], Vector(1859, 207))}
 
     -- Boss
-    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=20, vida=1, raio=70, raio_deteccao=200, vel=1000, vel_tiro=400, op=2}
+    tipo_boss = {posicao=Vector(2325, 350), dano=20, dano_tiro=20, vida=1200, raio=70, raio_deteccao=200, vel=1000, vel_tiro=400, op=2}
     boss = Boss("inimigos", tipo_boss)
     vida_boss_pctg = 200/tipo_boss.vida
 
@@ -141,15 +141,17 @@ function Fase2:draw()
         cam:attach()
         bg:draw()
 
-        if boss ~= nil then
+        if boss ~= nil and heroi.vida > 0 then
             boss:draw()
         end
 
         -- Todos os objetos e personagens do mapa
         local objetos_personagens_mapa = {}
 
-        for i=#inimigos, 1, -1 do
-            table.insert(objetos_personagens_mapa, inimigos[i])
+        if heroi.vida > 0 then
+            for i=#inimigos, 1, -1 do
+                table.insert(objetos_personagens_mapa, inimigos[i])
+            end
         end
 
         for i=#caixas, 1, -1 do

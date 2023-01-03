@@ -11,6 +11,11 @@ function Jogo:new()
     trocou_fase = false
     tempo_jogo = 0
     fase = Fase1()
+    delay_morte = 0
+
+    som_ambiente = love.audio.newSource("/materials/audio/terror-ambience-7003.mp3", "stream")
+    som_ambiente:setVolume(0.02)
+    som_ambiente:play()
 end
 
 function Jogo:update(dt)
@@ -20,7 +25,7 @@ function Jogo:update(dt)
     end
 
     if estado_pause == "false" then
-        if heroi.vida > 0 then
+        if delay_morte <= 0.6 then
             fase:update(dt)
 
             if fase.tempo <= 0 and boss ~= nil then
@@ -47,9 +52,20 @@ function Jogo:update(dt)
             else
                 fase.estado = 'nao finalizado'
             end
+        elseif delay_morte > 0.6 and delay_morte < 1.2 then
+            if self.estado_anterior == 'morrendo_esq' then
+                heroi.estado = 'morrendo_esq_final'
+            elseif self.estado_anterior == 'morrendo_dir' then
+                heroi.estado = 'morrendo_dir_final'
+            end
         else
             cena_atual = "game_over"
+            delay_morte = 0
         end
+    end
+
+    if heroi.vida <= 0 then
+        delay_morte = delay_morte + dt
     end
 end
 
