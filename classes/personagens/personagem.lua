@@ -287,7 +287,8 @@ function Personagem:draw()
         self.tiros[i]:draw()
     end
 
-    --love.graphics.circle("line", self.posicao.x, self.posicao.y, 5)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_tiro)
 end
 
 function Personagem:verifica_estado_andando()

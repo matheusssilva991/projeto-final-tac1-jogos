@@ -110,6 +110,6 @@ function Inimigo:draw()
     love.graphics.setColor(1, 0, 0)
     love.graphics.rectangle("fill", self.posicao.x - 78 + self.largura/2, self.posicao.y - self.altura/2, self.barra_vida, 6)
     love.graphics.setColor(1, 1, 1)
-    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
-    --love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio_deteccao)
+    love.graphics.circle("line", self.posicao.x, self.posicao.y, self.raio)
 end

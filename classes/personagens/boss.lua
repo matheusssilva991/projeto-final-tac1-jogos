@@ -178,14 +178,16 @@ function Boss:draw()
         else
             self.anim_boss:draw(self.img, self.posicao.x/escala - self.largura/2*escala + 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, 1, 1)
         end
-        --love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
     elseif self.direcao_olhando == 'esquerda' then
         if self.estado_ataque == 'carregar avanco'then
             self.anim_boss_parado:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         else
             self.anim_boss:draw(self.img, self.posicao.x/escala + self.largura/2*escala - 25, self.posicao.y/escala - self.altura/2*escala + 25, 0, -1, 1)
         end
-        --love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
+        love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio/escala)
     end
     love.graphics.pop()
 
