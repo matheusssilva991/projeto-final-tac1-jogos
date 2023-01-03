@@ -68,7 +68,7 @@ function Ajuda2:draw()
         end
 
         local bx = 50
-        local by = ((ALTURA_TELA * 0.5) - (total_altura * 0.5) + cursor_y) + 20
+        local by = ((ALTURA_TELA * 0.5) - (total_altura * 0.5) + cursor_y) + 55
 
         if botao.text == "<" or botao.text == ">" then
             if botao.text == "<" then

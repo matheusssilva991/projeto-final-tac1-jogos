@@ -82,9 +82,9 @@ function Boss:update(dt)
     -- Verifica se está no modo de ataque tiro
     if self.delay_ataque_tiro >= 0.45 and self.estado_ataque == 'tiro' then
         if self.posicao.x >= heroi.posicao.x then
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 10, 'boss', self.dano_tiro, self.vel_tiro))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'esquerda', 40, 'boss', self.dano_tiro, self.vel_tiro))
         else
-            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 10, 'boss', self.dano_tiro, self.vel_tiro))
+            table.insert(self.tiros, Tiro(self.posicao.x, self.posicao.y, 'direita', 40, 'boss', self.dano_tiro, self.vel_tiro))
         end
         self.delay_ataque_tiro = 0
     end
@@ -148,9 +148,9 @@ function Boss:update(dt)
 end
 
 function Boss:draw()
-    for i = #self.tiros, 1, -1 do
+    --[[ for i = #self.tiros, 1, -1 do
         self.tiros[i]:draw()
-    end
+    end ]]
 
     local escala = 1.5
     love.graphics.push()
@@ -187,5 +187,9 @@ function Boss:draw()
         end
         --love.graphics.circle("line", self.posicao.x/escala, self.posicao.y/escala, self.raio_deteccao/escala)
     end
-    love.graphics.pop()  
+    love.graphics.pop()
+
+    for i = #self.tiros, 1, -1 do
+        self.tiros[i]:draw()
+    end
 end

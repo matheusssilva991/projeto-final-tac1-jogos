@@ -11,6 +11,10 @@ function Jogo:new()
     trocou_fase = false
     tempo_jogo = 0
     fase = Fase1()
+
+    som_ambiente = love.audio.newSource("/materials/audio/terror-ambience-7003.mp3", "stream")
+    som_ambiente:setVolume(0.02)
+    som_ambiente:play()
 end
 
 function Jogo:update(dt)

@@ -105,7 +105,9 @@ function Personagem:update(dt)
         if verifica_colisao(heroi.posicao, heroi.raio, inimigos[i].posicao, inimigos[i].raio) then
             inimigos[i].colidindo = true
             if inimigos[i].delay_dano == 0 then
+                inimigos[i].esta_atacando = true
                 heroi.vida = math.max(heroi.vida - inimigos[i].dano, 0)
+                inimigos[i].som_ataque:play()
             end
         end
     end
@@ -126,11 +128,11 @@ function Personagem:update(dt)
     local tmp_cond_parado = (self.estado == 'parado_esq' or self.estado == 'parado_dir')
     if love.mouse.isDown(1) and not self.atirando and tmp_cond_parado and mouse_delay <=0 then
         self.atirando = true
-        
+
         local tiro
         -- Verifica para qual lado vai ser o tiro
         if self.estado == 'parado_esq' then
-           tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', self.dano, 1000)
+            tiro = Tiro(self.posicao.x, self.posicao.y, 'esquerda', 2, 'heroi', self.dano, 1000)
         elseif self.estado == 'parado_dir' then
             tiro = Tiro(self.posicao.x, self.posicao.y, 'direita', 2, 'heroi', self.dano, 1000)
         end
